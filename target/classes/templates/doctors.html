@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Doctors - MedCure Kashmir</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <i class="fas fa-heartbeat"></i> MedCure Kashmir
+            </a>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/doctors">Find Doctors</a></li>
+                <li><a href="/doctor-register" class="btn-register">Doctor Reg</a></li>
+                <li><a href="/patients/register" class="btn-register">Patient Reg</a></li>
+                <li><a href="/login" class="btn-login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <script>
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('show');
+        }
+    </script>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Find Doctors</h1>
+            <p>Browse our network of qualified healthcare professionals</p>
+        </div>
+    </section>
+
+    <section class="filters">
+        <div class="container">
+            <!-- Location Success/Disabled Messages -->
+            <div id="locationSuccess">
+                <i class="fas fa-check-circle"></i>
+                <span>Location enabled! Showing nearby doctors.</span>
+            </div>
+            
+            <div id="locationDisabled">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Location access denied. Showing all doctors. <a href="#" onclick="locationManager.showLocationPrompt(); return false;">Enable Location</a></span>
+            </div>
+
+            <!-- Location Info -->
+            <div id="locationInfo" class="alert alert-info" style="display: none;"></div>
+
+            <!-- Location Search Filter -->
+            <div class="location-filter-section">
+                <h4><i class="fas fa-map-marker-alt"></i> Find Doctors by Location</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="filter-option">
+                            <label><i class="fas fa-city"></i> City</label>
+                            <select id="cityFilter" class="form-control" onchange="searchByLocation()">
+                                <option value="">All Cities</option>
+                                <option value="Srinagar">Srinagar</option>
+                                <option value="Jammu">Jammu</option>
+                                <option value="Anantnag">Anantnag</option>
+                                <option value="Baramulla">Baramulla</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="filter-option">
+                            <label><i class="fas fa-location-arrow"></i> Area/Locality</label>
+                            <select id="areaFilter" class="form-control" onchange="searchByLocation()">
+                                <option value="">All Areas</option>
+                                <option value="Lal Chowk">Lal Chowk</option>
+                                <option value="Rajouri Kadal">Rajouri Kadal</option>
+                                <option value="Karan Nagar">Karan Nagar</option>
+                                <option value="Sonwar">Sonwar</option>
+                                <option value="Hyderpora">Hyderpora</option>
+                                <option value="Bemina">Bemina</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="filter-option">
+                            <label><i class="fas fa-users"></i> Search Radius</label>
+                            <select id="radiusFilter" class="form-control" onchange="searchByLocation()">
+                                <option value="5">Within 5 km</option>
+                                <option value="10" selected>Within 10 km</option>
+                                <option value="20">Within 20 km</option>
+                                <option value="50">Within 50 km</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="location-search-actions">
+                    <button class="btn btn-primary" onclick="locationManager.getUserLocation()">
+                        <i class="fas fa-crosshairs"></i> Use My Current Location
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetLocationFilter()">
+                        <i class="fas fa-redo"></i> Reset Filter
+                    </button>
+                    <span id="searchResultCount" class="search-count"></span>
+                </div>
+            </div>
+
+            <form class="filter-form" th:action="@{/doctors}" method="get">
+                <label for="specialization">Filter by Specialization:</label>
+                <select id="specialization" name="specializationId">
+                    <option value="">All Specializations</option>
+                    <option th:each="spec : ${specializations}" 
+                            th:value="${spec.id}" 
+                            th:text="${spec.name}">Specialization</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="doctors-list">
+        <div class="container">
+            <div class="doctor-grid" id="doctorsGrid">
+                <div th:if="${#lists.isEmpty(doctors)}" class="no-results">
+                    <p>No doctors found matching your criteria.</p>
+                </div>
+                <div th:each="doctor : ${doctors}" class="doctor-card">
+                    <div class="doctor-image">
+                        <img th:src="${doctor.image != null ? doctor.image : '/images/doctor-placeholder.svg'}" 
+                             alt="Doctor" onerror="this.src='/images/placeholder.svg'">
+                    </div>
+                    <div class="doctor-info">
+                        <h3 th:text="${doctor.name}">Dr. Name</h3>
+                        <p class="qualification" th:text="${doctor.qualification}">MBBS, MD</p>
+                        <p class="specialization" th:text="${doctor.specialization.name}">Cardiology</p>
+                        <p class="experience" th:text="${doctor.yearsOfExperience} + ' years experience'">10 years experience</p>
+                        <p class="clinic" th:text="${doctor.clinicAddress}">Clinic Address</p>
+                        <p class="fee">Consultation Fee: ₹<span th:text="${doctor.consultationFee}">500</span></p>
+                        <div class="doctor-actions">
+                            <a th:href="@{/doctors/{id}(id=${doctor.id})}" class="btn btn-secondary">View Profile</a>
+                            <a th:href="@{/appointments/new(doctorId=${doctor.id})}" class="btn btn-primary">Book Appointment</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 MedCure Kashmir. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Location Manager Script -->
+    <script th:src="@{/js/location-manager.js}"></script>
+</body>
+</html>

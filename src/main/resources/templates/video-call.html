@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call - MedCure Kashmir</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/video-call.css}">
+    
+    <!--
+        IMPORTANT: For production, this page MUST be served over HTTPS.
+        Browsers only allow camera/microphone access on secure contexts (HTTPS or localhost).
+        
+        Camera/Microphone Requirements:
+        - HTTPS is required in production (localhost is exempt)
+        - User must grant permission when prompted
+        - Camera must not be in use by another application
+    -->
+</head>
+<body>
+    <div class="video-call-container">
+        <!-- Header -->
+        <div class="call-header">
+            <div class="call-info">
+                <h2>
+                    <i class="fas fa-video"></i>
+                    Video Consultation
+                </h2>
+                <p class="appointment-details" th:if="${appointmentId != null}">
+                    <span th:text="${'Appointment #' + appointmentId}">Appointment #1</span>
+                    <span class="separator">•</span>
+                    <span th:text="${appointment.doctor.name}">Dr. Name</span>
+                    <span class="separator">•</span>
+                    <span th:text="${#temporals.format(appointment.appointmentDate, 'MMM dd, yyyy')}">Date</span>
+                    <span class="separator">•</span>
+                    <span th:text="${appointment.appointmentTime}">Time</span>
+                </p>
+                <p class="appointment-details" th:if="${requestId != null}">
+                    <span th:text="${'Video Call Request #' + requestId}">Request #1</span>
+                    <span class="separator">•</span>
+                    <span>Instant Video Consultation</span>
+                </p>
+            </div>
+            <a href="/doctor-dashboard" class="btn-back" th:if="${requestId != null}">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <a th:href="@{/appointments/{id}(id=${appointmentId})}" class="btn-back" th:if="${appointmentId != null}">
+                <i class="fas fa-arrow-left"></i> Back to Appointment
+            </a>
+        </div>
+        
+        <!-- Video Container -->
+        <div class="video-container">
+            <!-- Remote Video (Peer) -->
+            <div class="video-wrapper remote-video">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <div class="video-label">
+                    <i class="fas fa-user-md"></i>
+                    <span th:if="${appointmentId != null}" th:text="${appointment.doctor.name}">Doctor</span>
+                    <span th:if="${requestId != null}">Doctor</span>
+                </div>
+                <div class="video-status" id="remoteStatus">
+                    <span class="status-indicator"></span>
+                    <span class="status-text" id="remoteStatusText">Connecting...</span>
+                </div>
+            </div>
+
+            <!-- Local Video (Self) -->
+            <div class="video-wrapper local-video">
+                <video id="localVideo" autoplay playsinline muted></video>
+                <div class="video-label">
+                    <i class="fas fa-user"></i>
+                    <span>You</span>
+                </div>
+                <div class="video-controls-overlay">
+                    <span class="recording-indicator" id="recordingIndicator" style="display: none;">
+                        <i class="fas fa-circle"></i> LIVE
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waiting for patient message -->
+        <div id="waitingForPatient" class="alert alert-info" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; max-width: 400px;">
+            <i class="fas fa-clock fa-spin"></i>
+            <strong>Waiting for Patient</strong>
+            <p class="mb-0">The patient is being notified. Please wait...</p>
+        </div>
+        
+        <!-- Control Bar -->
+        <div class="control-bar">
+            <div class="control-buttons">
+                <!-- Mute/Unmute Audio -->
+                <button id="muteBtn" class="control-btn" onclick="toggleMute()" title="Mute/Unmute">
+                    <i class="fas fa-microphone"></i>
+                    <span class="btn-label">Mute</span>
+                </button>
+                
+                <!-- Camera On/Off -->
+                <button id="cameraBtn" class="control-btn" onclick="toggleCamera()" title="Turn Camera On/Off">
+                    <i class="fas fa-video"></i>
+                    <span class="btn-label">Camera</span>
+                </button>
+                
+                <!-- Screen Share (Optional) -->
+                <button id="screenShareBtn" class="control-btn" onclick="toggleScreenShare()" title="Share Screen">
+                    <i class="fas fa-desktop"></i>
+                    <span class="btn-label">Share</span>
+                </button>
+            </div>
+            
+            <!-- Hang Up Button -->
+            <button id="hangupBtn" class="control-btn hangup" onclick="hangup()" title="End Call">
+                <i class="fas fa-phone-slash"></i>
+                <span class="btn-label">End Call</span>
+            </button>
+        </div>
+        
+        <!-- Status Messages -->
+        <div id="statusMessage" class="status-message"></div>
+        
+        <!-- Connection Quality Indicator -->
+        <div class="connection-quality" id="connectionQuality" style="display: none;">
+            <i class="fas fa-signal"></i>
+            <span class="quality-text">Good</span>
+        </div>
+    </div>
+    
+    <!-- WebRTC Libraries -->
+    <!-- SockJS and STOMP for WebSocket signaling -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    
+    <!-- WebRTC Call Handler -->
+    <script th:src="@{/js/webrtc-call.js}"></script>
+    
+    <!-- Initialize Call -->
+    <script>
+        // Configuration from server
+        const CALL_CONFIG = {
+            appointmentId: [[${appointmentId}]],
+            requestId: [[${requestId}]],
+            username: /*[[${#authentication?.name}]]*/ 'guest',
+            returnUrl: [[${requestId != null ? '/doctor-dashboard' : '/appointments/' + appointmentId}]],
+            currentUser: window.location.pathname.split('/').pop()
+        };
+
+        // Check for HTTPS in production
+        function checkSecureContext() {
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1' ||
+                               window.location.hostname === '::1';
+            const isSecure = window.location.protocol === 'https:';
+            
+            if (!isSecure && !isLocalhost) {
+                showStatus('Warning: Camera access requires HTTPS. Please use HTTPS in production.');
+                console.warn('Camera/microphone access requires HTTPS. Only localhost is exempt.');
+            }
+            
+            return isSecure || isLocalhost;
+        }
+
+        // Initialize WebRTC call when page loads
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Check secure context
+            const isSecure = checkSecureContext();
+            
+            // Show waiting message for doctors
+            if (window.location.pathname.startsWith('/doctor/video-call')) {
+                document.getElementById('waitingForPatient').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('waitingForPatient').style.display = 'none';
+                }, 10000); // Hide after 10 seconds
+            }
+
+            // Try to get current user from session or prompt
+            const username = prompt("Enter your email (for testing):", "doctor@example.com");
+            if (username) {
+                CALL_CONFIG.username = username;
+                
+                // Check if browser supports WebRTC
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showStatus('Error: Your browser does not support WebRTC. Please use Chrome, Firefox, or Edge.');
+                    setTimeout(() => {
+                        window.location.href = CALL_CONFIG.returnUrl;
+                    }, 3000);
+                    return;
+                }
+                
+                // Initialize the call
+                try {
+                    await initializeCall(CALL_CONFIG);
+                } catch (error) {
+                    console.error('Failed to initialize call:', error);
+                    showStatus('Call initialization failed: ' + error.message);
+                }
+            } else {
+                showStatus("Authentication required");
+                setTimeout(() => {
+                    window.location.href = CALL_CONFIG.returnUrl;
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

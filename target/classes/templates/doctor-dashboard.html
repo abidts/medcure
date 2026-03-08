@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - MedCure Kashmir</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+        body {
+            background: #f5f7fa;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            padding: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0 5px;
+        }
+        .stat-card p {
+            color: #6c757d;
+            margin: 0;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .availability-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .appointment-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary-color);
+        }
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d1ecf1; color: #0c5460; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .filter-btn {
+            margin: 0 5px;
+        }
+        /* Status Toggle Styles */
+        .status-toggle-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .status-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            font-weight: 600;
+        }
+        #statusIndicator {
+            font-size: 10px;
+            color: #ff6b6b;
+        }
+        #statusIndicator.online {
+            color: #51cf66;
+        }
+        .form-check-input:checked {
+            background-color: #51cf66;
+            border-color: #51cf66;
+        }
+        /* Video Call Request Card */
+        .video-request-card {
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff9e6;
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: #ffc107; }
+            50% { border-color: #ff9800; }
+        }
+        .video-request-card .patient-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .video-request-card .request-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .recent-call-card {
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <h4 class="text-center mb-4"><i class="fas fa-heartbeat"></i> MedCure</h4>
+                
+                <!-- Online/Offline Status Toggle -->
+                <div class="status-toggle-container mb-3">
+                    <label class="status-label">
+                        <i class="fas fa-circle" id="statusIndicator"></i>
+                        <span id="statusText">Offline</span>
+                    </label>
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" id="statusToggle" onchange="toggleDoctorStatus()">
+                    </div>
+                </div>
+                
+                <hr>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="#" onclick="showSection('appointments')">
+                        <i class="fas fa-calendar-alt"></i> Appointments
+                    </a>
+                    <a class="nav-link" href="#" onclick="showSection('video-calls')">
+                        <i class="fas fa-video"></i> Video Calls
+                        <span class="badge bg-danger ms-2" id="videoRequestBadge" style="display: none;">0</span>
+                    </a>
+                    <a class="nav-link" href="#" onclick="showSection('video-rates')">
+                        <i class="fas fa-rupee-sign"></i> Call Rates
+                    </a>
+                    <a class="nav-link" href="#" onclick="showSection('availability')">
+                        <i class="fas fa-clock"></i> Availability
+                    </a>
+                    <a class="nav-link" href="#" onclick="showSection('profile')">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="content-section active">
+                    <h2 class="mb-4">Welcome, Dr. <span id="doctorName">Doctor</span></h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 id="totalAppointments">0</h3>
+                                        <p>Total Appointments</p>
+                                    </div>
+                                    <div class="stat-icon" style="background: #e3f2fd; color: #2196f3;">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 id="todayAppointments">0</h3>
+                                        <p>Today's Appointments</p>
+                                    </div>
+                                    <div class="stat-icon" style="background: #fff3e0; color: #ff9800;">
+                                        <i class="fas fa-sun"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 id="pendingAppointments">0</h3>
+                                        <p>Pending</p>
+                                    </div>
+                                    <div class="stat-icon" style="background: #fce4ec; color: #e91e63;">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 id="completedAppointments">0</h3>
+                                        <p>Completed</p>
+                                    </div>
+                                    <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="stat-card">
+                                <h4 class="mb-3"><i class="fas fa-calendar-day"></i> Today's Appointments</h4>
+                                <div id="todayAppointmentsList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments Section -->
+                <div id="appointments" class="content-section">
+                    <h2 class="mb-4">Appointments</h2>
+                    
+                    <div class="mb-4">
+                        <button class="btn btn-outline-primary filter-btn active" onclick="filterAppointments('today')">Today</button>
+                        <button class="btn btn-outline-primary filter-btn" onclick="filterAppointments('tomorrow')">Tomorrow</button>
+                        <button class="btn btn-outline-primary filter-btn" onclick="filterAppointments('upcoming')">Upcoming</button>
+                        <button class="btn btn-outline-primary filter-btn" onclick="filterAppointments('all')">All</button>
+                    </div>
+
+                    <div id="appointmentsList"></div>
+                </div>
+
+                <!-- Video Calls Section -->
+                <div id="video-calls" class="content-section">
+                    <h2 class="mb-4"><i class="fas fa-video"></i> Video Call Requests</h2>
+                    
+                    <!-- Status Alert -->
+                    <div class="alert alert-info mb-4" id="videoCallStatusAlert">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Go online to receive video call requests from patients.</strong>
+                        <button class="btn btn-sm btn-primary ms-3" onclick="toggleDoctorStatus()">
+                            Go Online
+                        </button>
+                    </div>
+                    
+                    <!-- Pending Requests -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-clock"></i> Pending Requests</h5>
+                        </div>
+                        <div class="card-body" id="pendingRequestsList">
+                            <p class="text-muted mb-0">No pending video call requests</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Calls -->
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-history"></i> Recent Calls</h5>
+                        </div>
+                        <div class="card-body" id="recentCallsList">
+                            <p class="text-muted mb-0">No recent video calls</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Call Rates Section -->
+                <div id="video-rates" class="content-section">
+                    <h2 class="mb-4"><i class="fas fa-rupee-sign"></i> Video Call Rates</h2>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-cog"></i> Set Your Video Call Rates</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Default Rate:</strong> ₹10 per minute (₹100 for 10 minutes minimum)
+                            </div>
+                            
+                            <form id="videoRateForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Rate Per Minute (₹)</label>
+                                        <input type="number" class="form-control" id="ratePerMinute" 
+                                               placeholder="e.g., 10" min="1" step="0.5" required>
+                                        <small class="text-muted">Minimum ₹1 per minute</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Minimum Duration (minutes)</label>
+                                        <input type="number" class="form-control" id="minimumDuration" 
+                                               value="10" min="5" max="60" required>
+                                        <small class="text-muted">Default: 10 minutes</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="stat-card py-2 px-3">
+                                        <small class="text-muted">Minimum Charge:</small>
+                                        <div class="fw-bold text-primary" style="font-size: 1.5rem;">
+                                            ₹<span id="calculatedMinCharge">100</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update Rates
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-chart-line"></i> Current Rates</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="stat-card">
+                                        <h4 class="text-primary">₹<span id="currentRatePerMinute">10</span></h4>
+                                        <p class="text-muted">Per Minute</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-card">
+                                        <h4 class="text-success"><span id="currentMinDuration">10</span> min</h4>
+                                        <p class="text-muted">Minimum Duration</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-card">
+                                        <h4 class="text-info">₹<span id="currentMinCharge">100</span></h4>
+                                        <p class="text-muted">Minimum Charge</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability Section -->
+                <div id="availability" class="content-section">
+                    <h2 class="mb-4">Set Your Availability</h2>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-plus-circle"></i> Add New Availability</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="availabilityForm">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Consultation Type</label>
+                                        <select class="form-select" id="consultationType" required>
+                                            <option value="CLINIC">Clinic Visit</option>
+                                            <option value="VIDEO">Video Consultation</option>
+                                            <option value="HOME_VISIT">Home Visit</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Day of Week</label>
+                                        <select class="form-select" id="dayOfWeek" required>
+                                            <option value="MONDAY">Monday</option>
+                                            <option value="TUESDAY">Tuesday</option>
+                                            <option value="WEDNESDAY">Wednesday</option>
+                                            <option value="THURSDAY">Thursday</option>
+                                            <option value="FRIDAY">Friday</option>
+                                            <option value="SATURDAY">Saturday</option>
+                                            <option value="SUNDAY">Sunday</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Start Time</label>
+                                        <input type="time" class="form-control" id="startTime" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">End Time</label>
+                                        <input type="time" class="form-control" id="endTime" required>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3"><i class="fas fa-list"></i> Your Availabilities</h5>
+                    <div id="availabilitiesList"></div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile" class="content-section">
+                    <h2 class="mb-4">My Profile</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="profileForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="profileName">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="profileEmail" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" class="form-control" id="profilePhone">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Qualification</label>
+                                        <input type="text" class="form-control" id="profileQualification">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Experience</label>
+                                    <textarea class="form-control" id="profileExperience" rows="3"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Clinic Address</label>
+                                        <textarea class="form-control" id="profileClinicAddress" rows="2"></textarea>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Consultation Fee</label>
+                                        <input type="number" class="form-control" id="profileConsultationFee">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update Profile
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDoctorId = localStorage.getItem('doctorId') || 1;
+        let currentUserId = localStorage.getItem('userId') || 1;
+
+        // Show/hide sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (sectionId === 'dashboard') loadDashboardStats();
+            if (sectionId === 'appointments') filterAppointments('today');
+            if (sectionId === 'video-calls') loadVideoCallRequests();
+            if (sectionId === 'video-rates') loadVideoCallRates();
+            if (sectionId === 'availability') loadAvailabilities();
+            if (sectionId === 'profile') loadProfile();
+        }
+
+        // Video Call Rates functions
+        function calculateMinCharge() {
+            const ratePerMinute = parseFloat(document.getElementById('ratePerMinute').value) || 0;
+            const minimumDuration = parseInt(document.getElementById('minimumDuration').value) || 10;
+            document.getElementById('calculatedMinCharge').textContent = ratePerMinute * minimumDuration;
+        }
+
+        async function loadVideoCallRates() {
+            try {
+                const response = await fetch(`/api/video-call-rate/doctor/${currentDoctorId}`);
+                const data = await response.json();
+
+                document.getElementById('currentRatePerMinute').textContent = data.ratePerMinute || 10;
+                document.getElementById('currentMinDuration').textContent = data.minimumDuration || 10;
+                document.getElementById('currentMinCharge').textContent = data.minimumCharge || 100;
+
+                document.getElementById('ratePerMinute').value = data.ratePerMinute || 10;
+                document.getElementById('minimumDuration').value = data.minimumDuration || 10;
+                calculateMinCharge();
+            } catch (error) {
+                console.error('Error loading video call rates:', error);
+            }
+        }
+
+        // Load Video Call Requests
+        async function loadVideoCallRequests() {
+            await loadPendingRequests();
+            await loadRecentCalls();
+        }
+
+        async function loadPendingRequests() {
+            try {
+                const response = await fetch(`/api/video-call/doctor/${currentDoctorId}/requests`);
+                const requests = await response.json();
+
+                const container = document.getElementById('pendingRequestsList');
+                if (requests.length === 0) {
+                    container.innerHTML = '<p class="text-muted mb-0">No pending video call requests</p>';
+                    return;
+                }
+
+                container.innerHTML = requests.map(req => `
+                    <div class="availability-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">${req.patientName || 'Patient'}</h5>
+                                <p class="mb-1 text-muted"><i class="fas fa-clock"></i> ${new Date(req.requestTime).toLocaleString()}</p>
+                                <p class="mb-2"><strong>Reason:</strong> ${req.reason || 'N/A'}</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success btn-sm" onclick="acceptVideoCall(${req.id})">
+                                    <i class="fas fa-video"></i> Accept
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectVideoCall(${req.id})">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading pending requests:', error);
+            }
+        }
+
+        async function loadRecentCalls() {
+            // For now, show a placeholder - can be enhanced to load completed calls
+            const container = document.getElementById('recentCallsList');
+            container.innerHTML = '<p class="text-muted mb-0">No recent video calls</p>';
+        }
+
+        async function acceptVideoCall(requestId) {
+            try {
+                const response = await fetch(`/api/video-call/request/${requestId}/accept`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Call accepted! Connecting to patient...\n\nPlease wait while the patient joins the call.');
+                    // Redirect to video call room
+                    window.location.href = '/doctor/video-call?requestId=' + requestId;
+                } else {
+                    alert('Failed to accept call: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error accepting call:', error);
+                alert('Failed to accept call. Please try again.');
+            }
+        }
+
+        async function rejectVideoCall(requestId) {
+            const reason = prompt('Enter reason for rejection (optional):');
+            if (reason === null) return; // User cancelled
+
+            try {
+                const response = await fetch(`/api/video-call/request/${requestId}/reject?reason=${encodeURIComponent(reason || '')}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Call rejected');
+                    loadPendingRequests();
+                } else {
+                    alert('Failed to reject call: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error rejecting call:', error);
+                alert('Failed to reject call. Please try again.');
+            }
+        }
+
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch(`/api/doctor/dashboard/stats/${currentDoctorId}`);
+                const stats = await response.json();
+                
+                document.getElementById('totalAppointments').textContent = stats.totalAppointments || 0;
+                document.getElementById('todayAppointments').textContent = stats.todayAppointments || 0;
+                document.getElementById('pendingAppointments').textContent = stats.pendingAppointments || 0;
+                document.getElementById('completedAppointments').textContent = stats.completedAppointments || 0;
+                
+                loadTodayAppointments();
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load today's appointments
+        async function loadTodayAppointments() {
+            try {
+                const response = await fetch(`/api/doctor/dashboard/appointments/${currentDoctorId}?filter=today`);
+                const data = await response.json();
+                
+                const container = document.getElementById('todayAppointmentsList');
+                if (data.appointments.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No appointments for today</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.appointments.map(apt => `
+                    <div class="appointment-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">${apt.patient?.name || 'Patient'}</h5>
+                                <p class="mb-1 text-muted"><i class="fas fa-clock"></i> ${apt.appointmentTime}</p>
+                                <span class="badge ${getTypeBadge(apt.consultationType)}">${apt.consultationType}</span>
+                            </div>
+                            <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+            }
+        }
+
+        // Filter appointments
+        async function filterAppointments(filter) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            try {
+                const response = await fetch(`/api/doctor/dashboard/appointments/${currentDoctorId}?filter=${filter}`);
+                const data = await response.json();
+                
+                const container = document.getElementById('appointmentsList');
+                if (data.appointments.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No appointments found</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.appointments.map(apt => `
+                    <div class="appointment-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">${apt.patient?.name || 'Patient'}</h5>
+                                <p class="mb-1 text-muted">
+                                    <i class="fas fa-calendar"></i> ${apt.appointmentDate} 
+                                    <i class="fas fa-clock"></i> ${apt.appointmentTime}
+                                </p>
+                                <span class="badge ${getTypeBadge(apt.consultationType)}">${apt.consultationType}</span>
+                                ${apt.reason ? `<p class="mb-0 mt-2"><small>Reason: ${apt.reason}</small></p>` : ''}
+                            </div>
+                            <div>
+                                <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+                                ${apt.status === 'PENDING' ? `
+                                    <button class="btn btn-sm btn-success ms-2" onclick="updateAppointmentStatus(${apt.id}, 'CONFIRMED')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger ms-1" onclick="updateAppointmentStatus(${apt.id}, 'CANCELLED')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+            }
+        }
+
+        // Update appointment status
+        async function updateAppointmentStatus(appointmentId, status) {
+            try {
+                await fetch(`/api/doctor/dashboard/appointments/${appointmentId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                filterAppointments('today');
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        // Load availabilities
+        async function loadAvailabilities() {
+            try {
+                const response = await fetch(`/api/doctor/dashboard/availability/${currentDoctorId}`);
+                const availabilities = await response.json();
+                
+                const container = document.getElementById('availabilitiesList');
+                if (availabilities.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No availabilities set</p>';
+                    return;
+                }
+                
+                container.innerHTML = availabilities.map(avail => `
+                    <div class="availability-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-primary">${avail.consultationType}</span>
+                                <strong>${avail.dayOfWeek}</strong>
+                                <span class="ms-3"><i class="fas fa-clock"></i> ${avail.startTime} - ${avail.endTime}</span>
+                                <span class="ms-3 text-muted">(${avail.slotDurationMinutes} min slots)</span>
+                            </div>
+                            <button class="btn btn-sm btn-danger" onclick="deleteAvailability(${avail.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading availabilities:', error);
+            }
+        }
+
+        // Update video call rates
+        document.getElementById('videoRateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const ratePerMinute = parseFloat(document.getElementById('ratePerMinute').value);
+            const minimumDuration = parseInt(document.getElementById('minimumDuration').value);
+
+            if (ratePerMinute < 1) {
+                alert('Rate per minute must be at least ₹1');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/video-call-rate/doctor/${currentDoctorId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ratePerMinute, minimumDuration })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Video call rates updated successfully!');
+                    loadVideoCallRates();
+                } else {
+                    alert('Failed to update rates: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error updating video call rates:', error);
+                alert('Failed to update rates. Please try again.');
+            }
+        });
+
+        // Add rate input listeners
+        document.getElementById('ratePerMinute').addEventListener('input', calculateMinCharge);
+        document.getElementById('minimumDuration').addEventListener('input', calculateMinCharge);
+
+        // Add availability
+        document.getElementById('availabilityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                doctor: { id: currentDoctorId },
+                consultationType: document.getElementById('consultationType').value,
+                dayOfWeek: document.getElementById('dayOfWeek').value,
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                slotDurationMinutes: 15,
+                isActive: true
+            };
+
+            try {
+                await fetch('/api/doctor/dashboard/availability', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                loadAvailabilities();
+                this.reset();
+            } catch (error) {
+                console.error('Error adding availability:', error);
+            }
+        });
+
+        // Delete availability
+        async function deleteAvailability(id) {
+            if (confirm('Are you sure you want to delete this availability?')) {
+                try {
+                    await fetch(`/api/doctor/dashboard/availability/${id}`, { method: 'DELETE' });
+                    loadAvailabilities();
+                } catch (error) {
+                    console.error('Error deleting availability:', error);
+                }
+            }
+        }
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const response = await fetch(`/api/doctor/dashboard/profile/${currentUserId}`);
+                const doctor = await response.json();
+                
+                document.getElementById('profileName').value = doctor.name || '';
+                document.getElementById('profileEmail').value = doctor.email || '';
+                document.getElementById('profilePhone').value = doctor.phone || '';
+                document.getElementById('profileQualification').value = doctor.qualification || '';
+                document.getElementById('profileExperience').value = doctor.experience || '';
+                document.getElementById('profileClinicAddress').value = doctor.clinicAddress || '';
+                document.getElementById('profileConsultationFee').value = doctor.consultationFee || '';
+                document.getElementById('doctorName').textContent = doctor.name || 'Doctor';
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Update profile
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                name: document.getElementById('profileName').value,
+                phone: document.getElementById('profilePhone').value,
+                qualification: document.getElementById('profileQualification').value,
+                experience: document.getElementById('profileExperience').value,
+                clinicAddress: document.getElementById('profileClinicAddress').value,
+                consultationFee: parseFloat(document.getElementById('profileConsultationFee').value)
+            };
+
+            try {
+                await fetch(`/api/doctor/dashboard/profile/${currentDoctorId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                alert('Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        });
+
+        // Helper function
+        function getTypeBadge(type) {
+            const badges = {
+                'CLINIC': 'bg-primary',
+                'VIDEO': 'bg-info',
+                'HOME_VISIT': 'bg-success'
+            };
+            return badges[type] || 'bg-secondary';
+        }
+
+        // Toggle doctor online/offline status
+        async function toggleDoctorStatus() {
+            const statusToggle = document.getElementById('statusToggle');
+            const statusText = document.getElementById('statusText');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const videoCallAlert = document.getElementById('videoCallStatusAlert');
+
+            try {
+                const doctorId = localStorage.getItem('doctorId');
+                const response = await fetch(`/api/doctor/dashboard/toggle-status/${doctorId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const isOnline = data.isOnline;
+
+                    // Update toggle switch
+                    statusToggle.checked = isOnline;
+
+                    // Update status text and indicator
+                    if (isOnline) {
+                        statusText.textContent = 'Online';
+                        statusIndicator.classList.remove('offline');
+                        statusIndicator.classList.add('online');
+                        if (videoCallAlert) {
+                            videoCallAlert.style.display = 'none';
+                        }
+                        // Load video call requests when going online
+                        loadVideoCallRequests();
+                        // Start polling for new requests
+                        startVideoCallPolling();
+                    } else {
+                        statusText.textContent = 'Offline';
+                        statusIndicator.classList.remove('online');
+                        statusIndicator.classList.add('offline');
+                        if (videoCallAlert) {
+                            videoCallAlert.style.display = 'block';
+                        }
+                        // Stop polling when going offline
+                        stopVideoCallPolling();
+                    }
+                }
+            } catch (error) {
+                console.error('Error toggling status:', error);
+                alert('Failed to update status. Please try again.');
+                // Revert toggle on error
+                statusToggle.checked = !statusToggle.checked;
+            }
+        }
+
+        // Load doctor's current status on page load
+        async function loadDoctorStatus() {
+            const statusToggle = document.getElementById('statusToggle');
+            const statusText = document.getElementById('statusText');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const videoCallAlert = document.getElementById('videoCallStatusAlert');
+
+            try {
+                const response = await fetch(`/api/video-call/doctor/${currentDoctorId}/status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const isOnline = data.isOnline || data.online;
+
+                    statusToggle.checked = isOnline;
+
+                    if (isOnline) {
+                        statusText.textContent = 'Online';
+                        statusIndicator.classList.remove('offline');
+                        statusIndicator.classList.add('online');
+                        if (videoCallAlert) {
+                            videoCallAlert.style.display = 'none';
+                        }
+                    } else {
+                        statusText.textContent = 'Offline';
+                        statusIndicator.classList.remove('online');
+                        statusIndicator.classList.add('offline');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading status:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('doctorId');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userRole');
+            window.location.href = '/';
+        }
+
+        // Video Call Polling
+        let videoCallPollingInterval = null;
+
+        function startVideoCallPolling() {
+            // Poll every 5 seconds for new video call requests when doctor is online
+            videoCallPollingInterval = setInterval(() => {
+                loadPendingRequests();
+            }, 5000);
+        }
+
+        function stopVideoCallPolling() {
+            if (videoCallPollingInterval) {
+                clearInterval(videoCallPollingInterval);
+                videoCallPollingInterval = null;
+            }
+        }
+
+        // Check doctor authentication on page load
+        function checkDoctorAuth() {
+            const doctorId = localStorage.getItem('doctorId');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!doctorId || userRole !== 'DOCTOR') {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+
+        // Initialize
+        if (checkDoctorAuth()) {
+            loadDashboardStats();
+            loadDoctorStatus();
+        }
+
+        // After loading doctor status, start polling if online
+        const originalLoadDoctorStatus = loadDoctorStatus;
+        loadDoctorStatus = async function() {
+            await originalLoadDoctorStatus();
+            const statusToggle = document.getElementById('statusToggle');
+            if (statusToggle && statusToggle.checked) {
+                // Doctor is already online, start polling
+                loadVideoCallRequests();
+                startVideoCallPolling();
+            }
+        };
+    </script>
+</body>
+</html>
