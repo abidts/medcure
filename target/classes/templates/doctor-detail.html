@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${doctor.name} + ' - MedCure Kashmir'">Doctor Profile</title>
+    <title th:text="${doctor.name} + ' - Tabib24x7'">Doctor Profile</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -161,7 +161,7 @@
     <nav class="navbar">
         <div class="container">
             <a href="/" class="navbar-brand">
-                <i class="fas fa-heartbeat"></i> MedCure Kashmir
+                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 40px; max-width: 180px; object-fit: contain;">
             </a>
             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
@@ -206,6 +206,56 @@
                 <div class="detail-section">
                     <h2>About</h2>
                     <p th:text="${doctor.experience}">Doctor's experience and bio</p>
+                </div>
+
+                <div class="detail-section">
+                    <h2>Specializations</h2>
+                    <div th:if="${doctor.specialization != null}">
+                        <p><strong>Primary:</strong> <span th:text="${doctor.specialization.name}">Specialization</span></p>
+                    </div>
+                    <div th:if="${doctor.specializations != null and !doctor.specializations.isEmpty()}">
+                        <p><strong>Additional:</strong> <span th:text="${doctor.specializations}">Additional specializations</span></p>
+                    </div>
+                    <div th:if="${(doctor.specialization == null or doctor.specialization.name == null) and (doctor.specializations == null or doctor.specializations.isEmpty())}">
+                        <p style="opacity: 0.7;">No specializations listed</p>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h2>Education</h2>
+                    <div th:if="${educations != null and !educations.isEmpty()}">
+                        <ul style="list-style: none; padding: 0;">
+                            <li th:each="edu : ${educations}" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+                                    <div style="flex: 1; min-width: 200px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #00b894;" th:text="${edu.degreeCourse}">Degree</h4>
+                                        <p style="margin: 0; color: #666;" th:text="${edu.institute}">Institute</p>
+                                    </div>
+                                    <div style="text-align: right; min-width: 80px;">
+                                        <span style="background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;" th:text="${edu.year}">Year</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div th:if="${educations == null or educations.isEmpty()}">
+                        <p style="opacity: 0.7;">No education details added</p>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h2>Services Offered</h2>
+                    <div th:if="${services != null and !services.isEmpty()}">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                            <div th:each="service : ${services}" style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #00b894;">
+                                <h4 style="margin: 0 0 8px 0; color: #00b894;" th:text="${service.serviceName}">Service Name</h4>
+                                <p style="margin: 0; color: #666; font-size: 0.95rem;" th:text="${service.description}">Service description</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${services == null or services.isEmpty()}">
+                        <p style="opacity: 0.7;">No services listed</p>
+                    </div>
                 </div>
 
                 <div class="detail-section">
@@ -423,7 +473,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 MedCure Kashmir. All rights reserved.</p>
+            <p>&copy; 2026 Tabib24x7. All rights reserved.</p>
         </div>
     </footer>
 </body>

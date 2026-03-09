@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Call - MedCure Kashmir</title>
+    <title>Video Call - Tabib24x7</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/video-call.css}">
     
@@ -135,13 +135,13 @@
     <script th:src="@{/js/webrtc-call.js}"></script>
     
     <!-- Initialize Call -->
-    <script>
+    <script th:inline="javascript">
         // Configuration from server
         const CALL_CONFIG = {
-            appointmentId: [[${appointmentId}]],
-            requestId: [[${requestId}]],
+            appointmentId: /*[[${appointmentId}]]*/ null,
+            requestId: /*[[${requestId}]]*/ null,
             username: /*[[${#authentication?.name}]]*/ 'guest',
-            returnUrl: [[${requestId != null ? '/doctor-dashboard' : '/appointments/' + appointmentId}]],
+            returnUrl: /*[[${requestId != null ? '/doctor-dashboard' : '/appointments/' + appointmentId}]]*/ '/',
             currentUser: window.location.pathname.split('/').pop()
         };
 

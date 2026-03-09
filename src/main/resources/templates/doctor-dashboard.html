@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Dashboard - MedCure Kashmir</title>
+    <title>Doctor Dashboard - Tabib24x7</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -19,6 +19,8 @@
             min-height: 100vh;
             color: white;
             padding: 20px;
+            position: relative;
+            z-index: 100;
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
@@ -113,10 +115,10 @@
         }
         #statusIndicator {
             font-size: 10px;
-            color: #ff6b6b;
+            color: #ff6b6b !important;
         }
         #statusIndicator.online {
-            color: #51cf66;
+            color: #51cf66 !important;
         }
         .form-check-input:checked {
             background-color: #51cf66;
@@ -152,6 +154,38 @@
             background: #f8f9fa;
             border-radius: 8px;
         }
+        /* Reports Modal Styling */
+        .report-modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 15px;
+        }
+        .report-item-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        .report-item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .report-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+        .report-name {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -159,7 +193,9 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-2 sidebar">
-                <h4 class="text-center mb-4"><i class="fas fa-heartbeat"></i> MedCure</h4>
+                <h4 class="text-center mb-4">
+                    <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 50px; max-width: 200px; object-fit: contain;">
+                </h4>
                 
                 <!-- Online/Offline Status Toggle -->
                 <div class="status-toggle-container mb-3">
@@ -174,23 +210,26 @@
                 
                 <hr>
                 <nav class="nav flex-column">
-                    <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                    <a class="nav-link active" href="#" onclick="showSection('dashboard', event)">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
-                    <a class="nav-link" href="#" onclick="showSection('appointments')">
+                    <a class="nav-link" href="#" onclick="showSection('appointments', event)">
                         <i class="fas fa-calendar-alt"></i> Appointments
                     </a>
-                    <a class="nav-link" href="#" onclick="showSection('video-calls')">
+                    <a class="nav-link" href="#" onclick="showSection('video-calls', event)">
                         <i class="fas fa-video"></i> Video Calls
                         <span class="badge bg-danger ms-2" id="videoRequestBadge" style="display: none;">0</span>
                     </a>
-                    <a class="nav-link" href="#" onclick="showSection('video-rates')">
+                    <a class="nav-link" href="#" onclick="showSection('video-rates', event)">
                         <i class="fas fa-rupee-sign"></i> Call Rates
                     </a>
-                    <a class="nav-link" href="#" onclick="showSection('availability')">
+                    <a class="nav-link" href="#" onclick="showSection('availability', event)">
                         <i class="fas fa-clock"></i> Availability
                     </a>
-                    <a class="nav-link" href="#" onclick="showSection('profile')">
+                    <a class="nav-link" href="#" onclick="showSection('staff', event)">
+                        <i class="fas fa-users-cog"></i> Staff Management
+                    </a>
+                    <a class="nav-link" href="#" onclick="showSection('profile', event)">
                         <i class="fas fa-user"></i> Profile
                     </a>
                     <a class="nav-link" href="#" onclick="logout()">
@@ -484,6 +523,40 @@
                                         <input type="number" class="form-control" id="profileConsultationFee">
                                     </div>
                                 </div>
+
+                                <!-- Specializations -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold"><i class="fas fa-stethoscope"></i> Specializations</label>
+                                    <textarea class="form-control" id="profileSpecializations" rows="2" placeholder="e.g., Cardiology, Pediatrics, Dermatology (comma separated)"></textarea>
+                                    <small class="text-muted">Separate multiple specializations with commas</small>
+                                </div>
+
+                                <!-- Education Section -->
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <label class="form-label fw-bold mb-0"><i class="fas fa-graduation-cap"></i> Education</label>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addEducationField()">
+                                            <i class="fas fa-plus"></i> Add Education
+                                        </button>
+                                    </div>
+                                    <div id="educationContainer">
+                                        <!-- Education fields will be added here -->
+                                    </div>
+                                </div>
+
+                                <!-- Services Section -->
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <label class="form-label fw-bold mb-0"><i class="fas fa-concierge-bell"></i> Services Offered</label>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addServiceField()">
+                                            <i class="fas fa-plus"></i> Add Service
+                                        </button>
+                                    </div>
+                                    <div id="servicesContainer">
+                                        <!-- Service fields will be added here -->
+                                    </div>
+                                </div>
+
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Update Profile
                                 </button>
@@ -491,20 +564,153 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Staff Management Section -->
+                <div id="staff" class="content-section">
+                    <h2 class="mb-4"><i class="fas fa-users-cog"></i> Staff Management</h2>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-user-plus"></i> Add New Staff Member</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="addStaffForm">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Username *</label>
+                                        <input type="text" class="form-control" id="staffUsername" required placeholder="Unique username for login">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Password *</label>
+                                        <input type="password" class="form-control" id="staffPassword" required placeholder="Minimum 4 characters">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="staffName" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="staffEmail" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Phone *</label>
+                                        <input type="tel" class="form-control" id="staffPhone" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Permissions</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="canPrintReceipts" checked>
+                                                <label class="form-check-label" for="canPrintReceipts">
+                                                    <i class="fas fa-receipt"></i> Print Receipts
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="canPrintPrescriptions" checked>
+                                                <label class="form-check-label" for="canPrintPrescriptions">
+                                                    <i class="fas fa-file-prescription"></i> Print Prescriptions
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="canCreateLetterheads" checked>
+                                                <label class="form-check-label" for="canCreateLetterheads">
+                                                    <i class="fas fa-file-alt"></i> Create Letterheads
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Staff Member
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-list"></i> Your Staff Members</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="staffList">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2">Loading staff members...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Patient Reports Modal -->
+    <div class="modal fade" id="reportsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-file-medical"></i> Patient Medical Reports</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="reportsContainer" class="report-modal-grid">
+                        <!-- Reports will be loaded here -->
+                        <div class="text-center w-100 py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">Loading reports...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let currentDoctorId = localStorage.getItem('doctorId') || 1;
-        let currentUserId = localStorage.getItem('userId') || 1;
+        let currentDoctorId = localStorage.getItem('doctorId');
+        let currentUserId = localStorage.getItem('userId');
+        
+        // Convert to number if exists, otherwise use default
+        if (currentDoctorId) {
+            currentDoctorId = parseInt(currentDoctorId);
+        } else {
+            currentDoctorId = 1; // Default for testing
+        }
+        
+        if (currentUserId) {
+            currentUserId = parseInt(currentUserId);
+        } else {
+            currentUserId = 1;
+        }
+        
+        console.log('Doctor ID:', currentDoctorId, 'User ID:', currentUserId);
 
         // Show/hide sections
-        function showSection(sectionId) {
+        function showSection(sectionId, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
+            // Find the closest nav-link in case the click was on a child element (like icon)
+            const clickedLink = event ? event.currentTarget : event.target;
+            if (clickedLink && clickedLink.classList.contains('nav-link')) {
+                clickedLink.classList.add('active');
+            }
 
             if (sectionId === 'dashboard') loadDashboardStats();
             if (sectionId === 'appointments') filterAppointments('today');
@@ -512,7 +718,152 @@
             if (sectionId === 'video-rates') loadVideoCallRates();
             if (sectionId === 'availability') loadAvailabilities();
             if (sectionId === 'profile') loadProfile();
+            if (sectionId === 'staff') loadStaffMembers();
         }
+
+        // Staff Management functions
+        async function loadStaffMembers() {
+            try {
+                const response = await fetch(`/api/staff/doctor/${currentDoctorId}`);
+                const staffList = await response.json();
+
+                const container = document.getElementById('staffList');
+                if (staffList.length === 0) {
+                    container.innerHTML = '<p class="text-muted text-center py-4">No staff members added yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = '<div class="row">' + staffList.map(staff => `
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-start border-4 border-${staff.isActive ? 'success' : 'secondary'}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="mb-1">${staff.name}</h5>
+                                        <p class="mb-1 text-muted"><i class="fas fa-user-tag"></i> ${staff.username}</p>
+                                        <p class="mb-1"><i class="fas fa-envelope"></i> ${staff.email}</p>
+                                        <p class="mb-1"><i class="fas fa-phone"></i> ${staff.phone}</p>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-${staff.isActive ? 'success' : 'secondary'} mb-2">
+                                            ${staff.isActive ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mb-2">
+                                    <small class="text-muted fw-bold">Permissions:</small>
+                                    <div class="mt-1">
+                                        ${staff.canPrintReceipts ? '<span class="badge bg-info me-1"><i class="fas fa-receipt"></i> Receipts</span>' : ''}
+                                        ${staff.canPrintPrescriptions ? '<span class="badge bg-warning me-1"><i class="fas fa-file-prescription"></i> Prescriptions</span>' : ''}
+                                        ${staff.canCreateLetterheads ? '<span class="badge bg-primary me-1"><i class="fas fa-file-alt"></i> Letterheads</span>' : ''}
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="toggleStaffStatus(${staff.id}, ${staff.isActive})">
+                                        <i class="fas fa-${staff.isActive ? 'ban' : 'check'}"></i> ${staff.isActive ? 'Deactivate' : 'Activate'}
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteStaff(${staff.id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') + '</div>';
+            } catch (error) {
+                console.error('Error loading staff members:', error);
+                document.getElementById('staffList').innerHTML = '<p class="text-danger text-center py-4">Failed to load staff members.</p>';
+            }
+        }
+
+        async function toggleStaffStatus(staffId, currentStatus) {
+            try {
+                const response = await fetch(`/api/staff/${staffId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isActive: !currentStatus })
+                });
+                
+                if (response.ok) {
+                    alert(`Staff member ${!currentStatus ? 'activated' : 'deactivated'} successfully!`);
+                    loadStaffMembers();
+                } else {
+                    alert('Failed to update staff status');
+                }
+            } catch (error) {
+                console.error('Error toggling staff status:', error);
+                alert('Failed to update staff status');
+            }
+        }
+
+        async function deleteStaff(staffId) {
+            if (!confirm('Are you sure you want to delete this staff member? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/staff/${staffId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Staff member deleted successfully!');
+                    loadStaffMembers();
+                } else {
+                    alert('Failed to delete staff member');
+                }
+            } catch (error) {
+                console.error('Error deleting staff:', error);
+                alert('Failed to delete staff member');
+            }
+        }
+
+        document.getElementById('addStaffForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Ensure doctorId is a number
+            const doctorId = typeof currentDoctorId === 'string' ? parseInt(currentDoctorId) : currentDoctorId;
+            
+            if (!doctorId) {
+                alert('Doctor ID not found. Please login again.');
+                return;
+            }
+
+            const staffData = {
+                username: document.getElementById('staffUsername').value,
+                password: document.getElementById('staffPassword').value,
+                name: document.getElementById('staffName').value,
+                email: document.getElementById('staffEmail').value,
+                phone: document.getElementById('staffPhone').value,
+                canPrintReceipts: document.getElementById('canPrintReceipts').checked,
+                canPrintPrescriptions: document.getElementById('canPrintPrescriptions').checked,
+                canCreateLetterheads: document.getElementById('canCreateLetterheads').checked,
+                doctor: { id: doctorId }
+            };
+
+            console.log('Submitting staff data:', staffData);
+
+            try {
+                const response = await fetch('/api/staff', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(staffData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Staff member added successfully!');
+                    document.getElementById('addStaffForm').reset();
+                    loadStaffMembers();
+                } else {
+                    alert(result.message || 'Failed to add staff member');
+                }
+            } catch (error) {
+                console.error('Error adding staff:', error);
+                alert('Failed to add staff member');
+            }
+        });
 
         // Video Call Rates functions
         function calculateMinCharge() {
@@ -664,7 +1015,12 @@
                                 <p class="mb-1 text-muted"><i class="fas fa-clock"></i> ${apt.appointmentTime}</p>
                                 <span class="badge ${getTypeBadge(apt.consultationType)}">${apt.consultationType}</span>
                             </div>
-                            <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-sm btn-outline-info" onclick="viewPatientReports(${apt.patient?.id})">
+                                    <i class="fas fa-file-medical"></i> Reports
+                                </button>
+                                <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -700,16 +1056,23 @@
                                 <span class="badge ${getTypeBadge(apt.consultationType)}">${apt.consultationType}</span>
                                 ${apt.reason ? `<p class="mb-0 mt-2"><small>Reason: ${apt.reason}</small></p>` : ''}
                             </div>
-                            <div>
-                                <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
-                                ${apt.status === 'PENDING' ? `
-                                    <button class="btn btn-sm btn-success ms-2" onclick="updateAppointmentStatus(${apt.id}, 'CONFIRMED')">
-                                        <i class="fas fa-check"></i>
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-info" onclick="viewPatientReports(${apt.patient?.id})">
+                                        <i class="fas fa-file-medical"></i> View Reports
                                     </button>
-                                    <button class="btn btn-sm btn-danger ms-1" onclick="updateAppointmentStatus(${apt.id}, 'CANCELLED')">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                ` : ''}
+                                    <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+                                </div>
+                                <div>
+                                    ${apt.status === 'PENDING' ? `
+                                        <button class="btn btn-sm btn-success" onclick="updateAppointmentStatus(${apt.id}, 'CONFIRMED')">
+                                            <i class="fas fa-check"></i> Confirm
+                                        </button>
+                                        <button class="btn btn-sm btn-danger ms-1" onclick="updateAppointmentStatus(${apt.id}, 'CANCELLED')">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    ` : ''}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -845,7 +1208,7 @@
             try {
                 const response = await fetch(`/api/doctor/dashboard/profile/${currentUserId}`);
                 const doctor = await response.json();
-                
+
                 document.getElementById('profileName').value = doctor.name || '';
                 document.getElementById('profileEmail').value = doctor.email || '';
                 document.getElementById('profilePhone').value = doctor.phone || '';
@@ -853,7 +1216,28 @@
                 document.getElementById('profileExperience').value = doctor.experience || '';
                 document.getElementById('profileClinicAddress').value = doctor.clinicAddress || '';
                 document.getElementById('profileConsultationFee').value = doctor.consultationFee || '';
+                document.getElementById('profileSpecializations').value = doctor.specializations || '';
                 document.getElementById('doctorName').textContent = doctor.name || 'Doctor';
+
+                // Load education
+                if (doctor.educations && doctor.educations.length > 0) {
+                    const educationContainer = document.getElementById('educationContainer');
+                    doctor.educations.forEach((edu, index) => {
+                        addEducationField(edu.institute, edu.degreeCourse, edu.year);
+                    });
+                } else {
+                    addEducationField('', '', '');
+                }
+
+                // Load services
+                if (doctor.services && doctor.services.length > 0) {
+                    const servicesContainer = document.getElementById('servicesContainer');
+                    doctor.services.forEach((svc, index) => {
+                        addServiceField(svc.serviceName, svc.description || '');
+                    });
+                } else {
+                    addServiceField('', '');
+                }
             } catch (error) {
                 console.error('Error loading profile:', error);
             }
@@ -862,25 +1246,56 @@
         // Update profile
         document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
+            // Collect education data
+            const educations = [];
+            document.querySelectorAll('.education-item').forEach(item => {
+                const institute = item.querySelector('.education-institute').value.trim();
+                const degreeCourse = item.querySelector('.education-degree').value.trim();
+                const year = item.querySelector('.education-year').value.trim();
+                if (institute && degreeCourse && year) {
+                    educations.push({ institute, degreeCourse, year: parseInt(year) });
+                }
+            });
+
+            // Collect services data
+            const services = [];
+            document.querySelectorAll('.service-item').forEach(item => {
+                const serviceName = item.querySelector('.service-name').value.trim();
+                const description = item.querySelector('.service-description').value.trim();
+                if (serviceName) {
+                    services.push({ serviceName, description });
+                }
+            });
+
             const data = {
                 name: document.getElementById('profileName').value,
                 phone: document.getElementById('profilePhone').value,
                 qualification: document.getElementById('profileQualification').value,
                 experience: document.getElementById('profileExperience').value,
                 clinicAddress: document.getElementById('profileClinicAddress').value,
-                consultationFee: parseFloat(document.getElementById('profileConsultationFee').value)
+                consultationFee: parseFloat(document.getElementById('profileConsultationFee').value),
+                specializations: document.getElementById('profileSpecializations').value,
+                educations: educations,
+                services: services
             };
 
             try {
-                await fetch(`/api/doctor/dashboard/profile/${currentDoctorId}`, {
+                const response = await fetch(`/api/doctor/dashboard/profile/${currentDoctorId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                alert('Profile updated successfully!');
+                
+                if (response.ok) {
+                    alert('Profile updated successfully!');
+                } else {
+                    const error = await response.json();
+                    alert('Failed to update profile: ' + (error.message || 'Unknown error'));
+                }
             } catch (error) {
                 console.error('Error updating profile:', error);
+                alert('Failed to update profile. Please try again.');
             }
         });
 
@@ -892,6 +1307,82 @@
                 'HOME_VISIT': 'bg-success'
             };
             return badges[type] || 'bg-secondary';
+        }
+
+        // Add Education Field
+        function addEducationField(institute = '', degree = '', year = '') {
+            const container = document.getElementById('educationContainer');
+            const educationItem = document.createElement('div');
+            educationItem.className = 'education-item mb-3 p-3 border rounded bg-light';
+            educationItem.innerHTML = `
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control education-institute" placeholder="Institute Name" value="${institute}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control education-degree" placeholder="Degree/Course" value="${degree}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control education-year" placeholder="Year" value="${year}" min="1950" max="2100" required>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeEducationField(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(educationItem);
+        }
+
+        // Remove Education Field
+        function removeEducationField(button) {
+            const educationItem = button.closest('.education-item');
+            const container = document.getElementById('educationContainer');
+            if (container.querySelectorAll('.education-item').length > 1) {
+                educationItem.remove();
+            } else {
+                // Clear the fields instead of removing the last one
+                educationItem.querySelector('.education-institute').value = '';
+                educationItem.querySelector('.education-degree').value = '';
+                educationItem.querySelector('.education-year').value = '';
+            }
+        }
+
+        // Add Service Field
+        function addServiceField(name = '', description = '') {
+            const container = document.getElementById('servicesContainer');
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item mb-3 p-3 border rounded bg-light';
+            serviceItem.innerHTML = `
+                <div class="row g-2">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control service-name" placeholder="Service Name" value="${name}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control service-description" placeholder="Description (optional)" value="${description}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeServiceField(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(serviceItem);
+        }
+
+        // Remove Service Field
+        function removeServiceField(button) {
+            const serviceItem = button.closest('.service-item');
+            const container = document.getElementById('servicesContainer');
+            if (container.querySelectorAll('.service-item').length > 1) {
+                serviceItem.remove();
+            } else {
+                // Clear the fields instead of removing the last one
+                serviceItem.querySelector('.service-name').value = '';
+                serviceItem.querySelector('.service-description').value = '';
+            }
         }
 
         // Toggle doctor online/offline status
@@ -977,6 +1468,74 @@
             } catch (error) {
                 console.error('Error loading status:', error);
             }
+        }
+
+        // View Patient Reports Functions
+        const reportsModal = new bootstrap.Modal(document.getElementById('reportsModal'));
+
+        async function viewPatientReports(patientId) {
+            if (!patientId) {
+                alert('Patient information not available');
+                return;
+            }
+
+            const container = document.getElementById('reportsContainer');
+            container.innerHTML = `
+                <div class="text-center w-100 py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Fetching patient reports...</p>
+                </div>
+            `;
+            
+            reportsModal.show();
+
+            try {
+                const response = await fetch(`/api/doctor/dashboard/patient/${patientId}/reports`);
+                if (!response.ok) throw new Error('Failed to fetch reports');
+                
+                const reports = await response.json();
+                renderReportsInModal(reports);
+            } catch (error) {
+                console.error('Error loading patient reports:', error);
+                container.innerHTML = `<div class="alert alert-danger w-100">Failed to load reports: ${error.message}</div>`;
+            }
+        }
+
+        function renderReportsInModal(reports) {
+            const container = document.getElementById('reportsContainer');
+            
+            if (!reports || reports.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center w-100 py-5">
+                        <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">This patient hasn't uploaded any reports yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reports.map(report => {
+                const isPdf = report.fileType === 'pdf';
+                const uploadDate = new Date(report.uploadDate).toLocaleDateString();
+                
+                return `
+                    <div class="report-item-card">
+                        <div class="report-icon">
+                            <i class="fas ${isPdf ? 'fa-file-pdf text-danger' : 'fa-file-image text-info'}"></i>
+                        </div>
+                        <span class="report-name" title="${report.reportName}">${report.reportName}</span>
+                        <small class="text-muted d-block mb-3">Uploaded: ${uploadDate}</small>
+                        <div class="d-grid gap-2">
+                            <a href="${report.fileUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="${report.fileUrl}" download="${report.reportName}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function logout() {

@@ -8,11 +8,11 @@
 		<version>3.5.11</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.medcurekashmir</groupId>
-	<artifactId>medcurekashmir</artifactId>
+	<groupId>com.tabib24x7</groupId>
+	<artifactId>tabib24x7</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>medcurekashmir</name>
-	<description>medcurekashmir</description>
+	<name>tabib24x7</name>
+	<description>Tabib24x7 - Healthcare Platform</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -74,6 +74,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- Cloudinary for image/pdf uploads -->
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.36.0</version>
 		</dependency>
 	</dependencies>
 
