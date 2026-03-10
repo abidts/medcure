@@ -28,7 +28,16 @@ public class DoctorServicesServiceImpl implements DoctorServicesService {
     @Override
     @Transactional
     public DoctorService createService(DoctorService service) {
-        Doctor doctor = doctorRepository.findById(service.getDoctor().getId())
+        Long doctorId = null;
+        if (service.getDoctor() != null && service.getDoctor().getId() != null) {
+            doctorId = service.getDoctor().getId();
+        }
+        
+        if (doctorId == null) {
+            throw new RuntimeException("Doctor ID is required");
+        }
+        
+        Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         service.setDoctor(doctor);
         return serviceRepository.save(service);

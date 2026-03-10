@@ -1,6 +1,8 @@
 package com.tabib24x7.controller;
 
+import com.tabib24x7.model.Doctor;
 import com.tabib24x7.model.Staff;
+import com.tabib24x7.repository.DoctorRepository;
 import com.tabib24x7.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,12 @@ public class StaffController {
     @Autowired
     private StaffService staffService;
 
+    @Autowired
+    private DoctorRepository doctorRepository;
+    
+    @Autowired
+    private com.tabib24x7.repository.StaffRepository staffRepository;
+
     @GetMapping("/doctor/{doctorId}")
     public List<Staff> getStaffByDoctorId(@PathVariable Long doctorId) {
         return staffService.getStaffByDoctorId(doctorId);
@@ -31,20 +39,87 @@ public class StaffController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createStaff(@RequestBody Staff staff) {
+    public ResponseEntity<?> createStaff(@RequestBody Map<String, Object> staffData) {
         try {
-            if (staffService.existsByUsername(staff.getUsername())) {
+            // Extract doctorId from request (can be in doctor object or as separate field)
+            Long doctorId = null;
+            
+            // Try to get doctorId from nested doctor object
+            if (staffData.containsKey("doctor")) {
+                Object doctorObj = staffData.get("doctor");
+                if (doctorObj instanceof Map) {
+                    Map<String, Object> doctorMap = (Map<String, Object>) doctorObj;
+                    Object idObj = doctorMap.get("id");
+                    if (idObj instanceof Number) {
+                        doctorId = ((Number) idObj).longValue();
+                    } else if (idObj instanceof String) {
+                        doctorId = Long.parseLong((String) idObj);
+                    }
+                }
+            }
+            
+            // Also check for direct doctorId field (fallback)
+            if (doctorId == null && staffData.containsKey("doctorId")) {
+                Object idObj = staffData.get("doctorId");
+                if (idObj instanceof Number) {
+                    doctorId = ((Number) idObj).longValue();
+                } else if (idObj instanceof String) {
+                    doctorId = Long.parseLong((String) idObj);
+                }
+            }
+
+            if (doctorId == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "Doctor ID is required");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            // Verify doctor exists - use final variable for lambda
+            final Long finalDoctorId = doctorId;
+            Doctor doctor = doctorRepository.findById(doctorId)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + finalDoctorId));
+
+            // Create staff object
+            Staff staff = new Staff();
+            staff.setUsername((String) staffData.get("username"));
+            String password = (String) staffData.get("password");
+            // Only add HASH_ prefix if not already present
+            if (!password.startsWith("HASH_")) {
+                password = "HASH_" + password;
+            }
+            staff.setPassword(password);
+            staff.setName((String) staffData.get("name"));
+            staff.setEmail((String) staffData.get("email"));
+            staff.setPhone((String) staffData.get("phone"));
+            staff.setDoctor(doctor);
+
+            // Set permissions with defaults
+            staff.setCanPrintReceipts(getBooleanValue(staffData.get("canPrintReceipts")));
+            staff.setCanPrintPrescriptions(getBooleanValue(staffData.get("canPrintPrescriptions")));
+            staff.setCanCreateLetterheads(getBooleanValue(staffData.get("canCreateLetterheads")));
+            staff.setIsActive(true);
+
+            String usernameToCheck = staff.getUsername();
+            if (staffService.existsByUsername(usernameToCheck)) {
                 Map<String, String> error = new HashMap<>();
                 error.put("message", "Username already exists");
                 return ResponseEntity.badRequest().body(error);
             }
-            Staff createdStaff = staffService.createStaff(staff);
+
+            Staff createdStaff = staffRepository.save(staff);
             return ResponseEntity.ok(createdStaff);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
+    }
+
+    private boolean getBooleanValue(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        return true; // default value
     }
 
     @PutMapping("/{id}")

@@ -433,7 +433,7 @@
                 <!-- Availability Section -->
                 <div id="availability" class="content-section">
                     <h2 class="mb-4">Set Your Availability</h2>
-                    
+
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5><i class="fas fa-plus-circle"></i> Add New Availability</h5>
@@ -479,8 +479,23 @@
                         </div>
                     </div>
 
-                    <h5 class="mb-3"><i class="fas fa-list"></i> Your Availabilities</h5>
-                    <div id="availabilitiesList"></div>
+                    <div class="card mb-3">
+                        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-list"></i> Your Availabilities</h5>
+                            <div class="d-flex gap-2 align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllAvailabilities" onchange="toggleSelectAll()">
+                                    <label class="form-check-label text-white" for="selectAllAvailabilities">Select All</label>
+                                </div>
+                                <button class="btn btn-sm btn-light" onclick="deleteSelectedAvailabilities()" id="deleteSelectedBtn" style="display: none;">
+                                    <i class="fas fa-trash"></i> Delete Selected (<span id="selectedCount">0</span>)
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="availabilitiesList"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Profile Section -->
@@ -679,22 +694,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let currentDoctorId = localStorage.getItem('doctorId');
-        let currentUserId = localStorage.getItem('userId');
+        // Get doctorId from URL parameter first, then localStorage, then default
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentDoctorId = urlParams.get('doctorId');
         
-        // Convert to number if exists, otherwise use default
         if (currentDoctorId) {
             currentDoctorId = parseInt(currentDoctorId);
         } else {
-            currentDoctorId = 1; // Default for testing
+            currentDoctorId = localStorage.getItem('doctorId');
+            if (currentDoctorId) {
+                currentDoctorId = parseInt(currentDoctorId);
+            } else {
+                currentDoctorId = 1; // Default for testing
+            }
         }
-        
+
+        let currentUserId = localStorage.getItem('userId');
         if (currentUserId) {
             currentUserId = parseInt(currentUserId);
         } else {
             currentUserId = 1;
         }
-        
+
+        // Validate doctorId
+        if (!currentDoctorId || currentDoctorId <= 0) {
+            alert('Doctor ID is missing. Please login again.');
+            window.location.href = '/login';
+        }
+
         console.log('Doctor ID:', currentDoctorId, 'User ID:', currentUserId);
 
         // Show/hide sections
@@ -1101,30 +1128,106 @@
             try {
                 const response = await fetch(`/api/doctor/dashboard/availability/${currentDoctorId}`);
                 const availabilities = await response.json();
-                
+
                 const container = document.getElementById('availabilitiesList');
                 if (availabilities.length === 0) {
-                    container.innerHTML = '<p class="text-muted">No availabilities set</p>';
+                    container.innerHTML = '<p class="text-muted text-center py-4">No availabilities set. Add your first availability above.</p>';
+                    document.getElementById('selectAllAvailabilities').closest('.card-header').style.display = 'none';
                     return;
                 }
                 
+                document.getElementById('selectAllAvailabilities').closest('.card-header').style.display = 'flex';
+
                 container.innerHTML = availabilities.map(avail => `
-                    <div class="availability-card">
+                    <div class="availability-card" data-avail-id="${avail.id}">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="badge bg-primary">${avail.consultationType}</span>
-                                <strong>${avail.dayOfWeek}</strong>
-                                <span class="ms-3"><i class="fas fa-clock"></i> ${avail.startTime} - ${avail.endTime}</span>
-                                <span class="ms-3 text-muted">(${avail.slotDurationMinutes} min slots)</span>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input availability-checkbox" type="checkbox" value="${avail.id}" onchange="updateSelectedCount()">
+                                </div>
+                                <div>
+                                    <span class="badge bg-primary">${avail.consultationType}</span>
+                                    <strong>${avail.dayOfWeek}</strong>
+                                    <span class="ms-3"><i class="fas fa-clock"></i> ${avail.startTime} - ${avail.endTime}</span>
+                                    <span class="ms-3 text-muted">(${avail.slotDurationMinutes} min slots)</span>
+                                </div>
                             </div>
-                            <button class="btn btn-sm btn-danger" onclick="deleteAvailability(${avail.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteAvailability(${avail.id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
             } catch (error) {
                 console.error('Error loading availabilities:', error);
+            }
+        }
+
+        // Toggle select all checkboxes
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllAvailabilities');
+            const checkboxes = document.querySelectorAll('.availability-checkbox');
+            
+            checkboxes.forEach(cb => {
+                cb.checked = selectAllCheckbox.checked;
+            });
+            
+            updateSelectedCount();
+        }
+
+        // Update selected count and show/hide delete button
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.availability-checkbox:checked');
+            const count = checkboxes.length;
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            
+            document.getElementById('selectedCount').textContent = count;
+            
+            if (count > 0) {
+                deleteBtn.style.display = 'block';
+            } else {
+                deleteBtn.style.display = 'none';
+            }
+            
+            // Update select all checkbox state
+            const selectAllCheckbox = document.getElementById('selectAllAvailabilities');
+            const allCheckboxes = document.querySelectorAll('.availability-checkbox');
+            
+            if (allCheckboxes.length === 0) {
+                selectAllCheckbox.checked = false;
+            } else if (count === allCheckboxes.length) {
+                selectAllCheckbox.checked = true;
+            } else {
+                selectAllCheckbox.checked = false;
+            }
+        }
+
+        // Delete selected availabilities
+        async function deleteSelectedAvailabilities() {
+            const checkboxes = document.querySelectorAll('.availability-checkbox:checked');
+            const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (selectedIds.length === 0) {
+                alert('Please select at least one availability to delete');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} selected availability/availabilities?`)) {
+                try {
+                    const deletePromises = selectedIds.map(id => 
+                        fetch(`/api/doctor/dashboard/availability/${id}`, { method: 'DELETE' })
+                    );
+                    
+                    await Promise.all(deletePromises);
+                    
+                    alert(`${selectedIds.length} availability/availabilities deleted successfully!`);
+                    loadAvailabilities();
+                } catch (error) {
+                    console.error('Error deleting availabilities:', error);
+                    alert('Failed to delete selected availabilities');
+                }
             }
         }
 

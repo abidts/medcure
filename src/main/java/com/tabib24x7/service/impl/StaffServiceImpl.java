@@ -59,7 +59,11 @@ public class StaffServiceImpl implements StaffService {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         staff.setDoctor(doctor);
-        staff.setPassword("HASH_" + staff.getPassword());
+        String password = staff.getPassword();
+        // Only add HASH_ prefix if not already present
+        if (!password.startsWith("HASH_")) {
+            staff.setPassword("HASH_" + password);
+        }
         return staffRepository.save(staff);
     }
 
@@ -100,8 +104,23 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Staff> authenticate(String username, String password) {
-        return staffRepository.findByUsernameAndPassword(username, "HASH_" + password);
+        Optional<Staff> staffOpt = staffRepository.findByUsername(username);
+        if (staffOpt.isPresent()) {
+            Staff staff = staffOpt.get();
+            if (!staff.getIsActive()) {
+                return Optional.empty();
+            }
+            String storedPassword = staff.getPassword();
+            String expectedPassword = "HASH_" + password;
+            
+            // Support both hashed and plain password formats for backward compatibility
+            if (expectedPassword.equals(storedPassword) || password.equals(storedPassword)) {
+                return Optional.of(staff);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

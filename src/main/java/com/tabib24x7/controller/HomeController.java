@@ -221,7 +221,10 @@ public class HomeController {
     }
 
     @GetMapping("/doctor-dashboard")
-    public String doctorDashboardPage() {
+    public String doctorDashboardPage(@RequestParam(required = false) Long doctorId, Model model) {
+        if (doctorId != null) {
+            model.addAttribute("doctorId", doctorId);
+        }
         return "doctor-dashboard";
     }
 

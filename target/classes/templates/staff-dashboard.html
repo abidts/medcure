@@ -57,14 +57,34 @@
         }
         /* Print Styles */
         @media print {
-            .sidebar, .no-print {
+            .sidebar, .no-print, .card-header, .col-md-4, h2, hr, .no-print * {
                 display: none !important;
             }
             .main-content {
-                padding: 0;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
             }
-            .print-area {
-                box-shadow: none;
+            .col-md-10, .col-md-8 {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .card-body {
+                padding: 0 !important;
+            }
+            .print-preview {
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+            }
+            body {
+                background: white !important;
             }
         }
         .print-preview {
@@ -75,10 +95,23 @@
             margin: 0 auto;
         }
         .letterhead-header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 3px solid #667eea;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .doctor-info-header {
+            text-align: left;
+        }
+        .doctor-logo-header {
+            text-align: right;
+        }
+        .doctor-logo-header img {
+            height: 80px;
+            width: 80px;
+            object-fit: contain;
         }
         .prescription-body {
             min-height: 400px;
@@ -126,10 +159,10 @@
             <div class="col-md-10 main-content">
                 <!-- Prescription Section -->
                 <div id="prescription" class="content-section active">
-                    <h2 class="mb-4"><i class="fas fa-file-prescription"></i> Generate Prescription</h2>
+                    <h2 class="mb-4 no-print"><i class="fas fa-file-prescription"></i> Generate Prescription</h2>
                     
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 no-print">
                             <div class="card mb-3">
                                 <div class="card-header bg-primary text-white">
                                     <h5 class="mb-0">Patient Details</h5>
@@ -160,13 +193,23 @@
                                             <label class="form-label">Date *</label>
                                             <input type="date" class="form-control" id="prescriptionDate" required>
                                         </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">BP</label>
+                                                <input type="text" class="form-control" id="patientBP" placeholder="120/80">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Height</label>
+                                                <input type="text" class="form-control" id="patientHeight" placeholder="cm/ft">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Weight</label>
+                                                <input type="text" class="form-control" id="patientWeight" placeholder="kg">
+                                            </div>
+                                        </div>
                                         <div class="mb-3">
                                             <label class="form-label">Diagnosis</label>
                                             <textarea class="form-control" id="diagnosis" rows="2" placeholder="Diagnosis/Complaints"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Medications/Prescription *</label>
-                                            <textarea class="form-control" id="medications" rows="4" placeholder="Enter medications one per line" required></textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Additional Notes</label>
@@ -185,7 +228,7 @@
                         </div>
                         <div class="col-md-8">
                             <div class="card">
-                                <div class="card-header bg-success text-white">
+                                <div class="card-header bg-success text-white no-print">
                                     <h5 class="mb-0">Preview</h5>
                                 </div>
                                 <div class="card-body">
@@ -204,10 +247,10 @@
 
                 <!-- Receipt Section -->
                 <div id="receipt" class="content-section">
-                    <h2 class="mb-4"><i class="fas fa-receipt"></i> Generate Receipt</h2>
+                    <h2 class="mb-4 no-print"><i class="fas fa-receipt"></i> Generate Receipt</h2>
                     
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 no-print">
                             <div class="card mb-3">
                                 <div class="card-header bg-primary text-white">
                                     <h5 class="mb-0">Receipt Details</h5>
@@ -256,7 +299,7 @@
                         </div>
                         <div class="col-md-8">
                             <div class="card">
-                                <div class="card-header bg-success text-white">
+                                <div class="card-header bg-success text-white no-print">
                                     <h5 class="mb-0">Preview</h5>
                                 </div>
                                 <div class="card-body">
@@ -275,10 +318,10 @@
 
                 <!-- Letterhead Section -->
                 <div id="letterhead" class="content-section">
-                    <h2 class="mb-4"><i class="fas fa-file-alt"></i> Generate Letterhead</h2>
+                    <h2 class="mb-4 no-print"><i class="fas fa-file-alt"></i> Generate Letterhead</h2>
                     
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 no-print">
                             <div class="card mb-3">
                                 <div class="card-header bg-primary text-white">
                                     <h5 class="mb-0">Letterhead Details</h5>
@@ -336,7 +379,7 @@
                         </div>
                         <div class="col-md-8">
                             <div class="card">
-                                <div class="card-header bg-success text-white">
+                                <div class="card-header bg-success text-white no-print">
                                     <h5 class="mb-0">Preview</h5>
                                 </div>
                                 <div class="card-body">
@@ -412,40 +455,49 @@
             const patientAddress = document.getElementById('patientAddress').value;
             const date = document.getElementById('prescriptionDate').value;
             const diagnosis = document.getElementById('diagnosis').value;
-            const medications = document.getElementById('medications').value;
             const additionalNotes = document.getElementById('additionalNotes').value;
             const footerText = document.getElementById('prescriptionFooter').value || 'This is a computer generated prescription';
 
-            const medicationsList = medications.split('\n').filter(m => m.trim()).map(m => `<li>${m.trim()}</li>`).join('');
+            const patientBP = document.getElementById('patientBP').value;
+            const patientHeight = document.getElementById('patientHeight').value;
+            const patientWeight = document.getElementById('patientWeight').value;
 
             const preview = `
                 <div class="letterhead-header">
-                    <h2 style="color: #667eea; margin-bottom: 5px;">${doctorInfo.name || 'Doctor Name'}</h2>
-                    <p style="margin: 0; color: #666;">${doctorInfo.qualification || 'MBBS, MD'}</p>
-                    <p style="margin: 5px 0 0 0; color: #666;">${doctorInfo.specialization?.name || 'Specialization'}</p>
-                    <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #888;">${doctorInfo.clinicAddress || 'Clinic Address'}</p>
-                    <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #888;">Phone: ${doctorInfo.phone || 'N/A'} | Email: ${doctorInfo.email || 'N/A'}</p>
+                    <div class="doctor-info-header">
+                        <h4 style="color: #333; margin: 0; font-weight: bold;">${doctorInfo.name || 'Doctor Name'}</h4>
+                        <p style="margin: 2px 0; color: #555; font-size: 0.9rem;">${doctorInfo.qualification || 'MBBS, MD'}</p>
+                        <p style="margin: 2px 0 0 0; color: #555; font-size: 0.9rem;">${doctorInfo.specialization?.name || 'Specialization'}</p>
+                        <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #666;">${doctorInfo.clinicAddress || 'Clinic Address'}</p>
+                        <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #666;">Ph: ${doctorInfo.phone || 'N/A'}</p>
+                    </div>
+                    <div class="doctor-logo-header">
+                        <img src="/images/doctor-hallmark.png" alt="Hallmark">
+                    </div>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-                    <div>
-                        <strong>Patient Name:</strong> ${patientName}<br>
-                        <strong>Age:</strong> ${patientAge} years &nbsp;&nbsp;
-                        <strong>Gender:</strong> ${patientGender}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.95rem;">
+                    <div style="flex: 1;">
+                        <strong>Patient:</strong> ${patientName}<br>
+                        <strong>Age/Sex:</strong> ${patientAge}Y / ${patientGender}
                     </div>
-                    <div style="text-align: right;">
-                        <strong>Date:</strong> ${new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}<br>
-                        ${patientAddress ? `<strong>Address:</strong> ${patientAddress}` : ''}
+                    <div style="text-align: right; flex: 1;">
+                        <strong>Date:</strong> ${new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}<br>
+                        ${patientAddress ? `<strong>Addr:</strong> ${patientAddress}` : ''}
                     </div>
                 </div>
+
+                ${(patientBP || patientHeight || patientWeight) ? `
+                <div style="display: flex; gap: 30px; margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                    ${patientBP ? `<span><strong>BP:</strong> ${patientBP}</span>` : ''}
+                    ${patientHeight ? `<span><strong>Height:</strong> ${patientHeight}</span>` : ''}
+                    ${patientWeight ? `<span><strong>Weight:</strong> ${patientWeight}</span>` : ''}
+                </div>
+                ` : ''}
 
                 <div class="prescription-body">
                     ${diagnosis ? `<p><strong>Diagnosis:</strong> ${diagnosis}</p>` : ''}
                     
-                    <h4 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Rx</h4>
-                    <ol style="line-height: 2;">
-                        ${medicationsList}
-                    </ol>
 
                     ${additionalNotes ? `<p style="margin-top: 20px;"><strong>Notes:</strong> ${additionalNotes}</p>` : ''}
                 </div>

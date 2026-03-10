@@ -28,7 +28,16 @@ public class DoctorEducationServiceImpl implements DoctorEducationService {
     @Override
     @Transactional
     public DoctorEducation createEducation(DoctorEducation education) {
-        Doctor doctor = doctorRepository.findById(education.getDoctor().getId())
+        Long doctorId = null;
+        if (education.getDoctor() != null && education.getDoctor().getId() != null) {
+            doctorId = education.getDoctor().getId();
+        }
+        
+        if (doctorId == null) {
+            throw new RuntimeException("Doctor ID is required");
+        }
+        
+        Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         education.setDoctor(doctor);
         return educationRepository.save(education);
