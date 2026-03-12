@@ -8,11 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Announcement Bar -->
+    <div id="announcementBar" class="announcement-bar announcement-hidden">
+        <div class="announcement-content">
+            <i class="fas fa-info-circle"></i>
+            <span class="announcement-text">Welcome to Tabib24x7 - Your Health, Our Priority!</span>
+            <button class="announcement-close" onclick="announcementManager.closeAnnouncement()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
             <a href="/" class="navbar-brand">
-                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 40px; max-width: 180px; object-fit: contain;">
+                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 55px; max-width: 220px; object-fit: contain;">
             </a>
             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
@@ -152,11 +163,16 @@
 
     <footer class="footer">
         <div class="container">
+            <div style="margin-bottom: 15px;">
+                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 45px; max-width: 200px; object-fit: contain; opacity: 0.95;">
+            </div>
             <p>&copy; 2026 Tabib24x7. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- Location Manager Script -->
     <script th:src="@{/js/location-manager.js}"></script>
+    <!-- Announcement Bar Script -->
+    <script th:src="@{/js/announcement-bar.js}"></script>
 </body>
 </html>

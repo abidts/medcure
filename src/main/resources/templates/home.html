@@ -8,11 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Announcement Bar -->
+    <div id="announcementBar" class="announcement-bar announcement-hidden">
+        <div class="announcement-content">
+            <i class="fas fa-info-circle"></i>
+            <span class="announcement-text">Welcome to Tabib24x7 - Your Health, Our Priority!</span>
+            <button class="announcement-close" onclick="announcementManager.closeAnnouncement()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
             <a href="/" class="navbar-brand">
-                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 40px; max-width: 180px; object-fit: contain;">
+                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 55px; max-width: 220px; object-fit: contain;">
             </a>
             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
@@ -20,6 +31,7 @@
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/doctors">Find Doctors</a></li>
+                <li><a href="/about-us">About Us</a></li>
                 <li><a href="/doctor-register" class="btn-register" id="doctorRegBtn">Doctor Reg</a></li>
                 <li><a href="/patients/register" class="btn-register" id="patientRegBtn">Patient Reg</a></li>
                 <li><a href="/login" class="btn-login" id="loginBtn">Login</a></li>
@@ -103,30 +115,39 @@
                     </div>
                 </div>
             </div>
-            
-            <div style="margin-top: 20px;">
-                <a href="/doctors" class="btn btn-primary btn-large me-2">Find a Doctor</a>
-                <a href="/login" class="btn btn-success btn-large" id="patientPortalBtn">Patient Login</a>
-            </div>
         </div>
     </header>
 
     <section class="specializations">
         <div class="container">
             <h2>Browse by Specialization</h2>
-            <div class="specialization-grid">
-                <div th:each="spec : ${specializations}" class="spec-card">
+            <div class="specialization-grid" id="specializationGrid">
+                <div th:each="spec, iterStat : ${specializations}"
+                     class="spec-card"
+                     th:classappend="${iterStat.index >= 10} ? 'hidden-spec'"
+                     th:data-index="${iterStat.index}">
                     <h3 th:text="${spec.name}">Specialization</h3>
                     <p th:text="${spec.description}">Description</p>
+                    <p class="specialist-count" th:text="${#lists.size(spec.doctors)} + ' Specialists'">0 Specialists</p>
                     <a th:href="@{/doctors(specializationId=${spec.id})}" class="btn btn-secondary">View Doctors</a>
                 </div>
+            </div>
+
+            <!-- Show More Buttons -->
+            <div class="text-center mt-4" id="showMoreContainer">
+                <button id="showMoreBtn" class="btn btn-primary btn-show-more" onclick="showMoreSpecializations()">
+                    <i class="fas fa-plus"></i> Show More Specializations
+                </button>
+                <button id="showLessBtn" class="btn btn-secondary" onclick="showLessSpecializations()" style="display: none;">
+                    <i class="fas fa-minus"></i> Show Less
+                </button>
             </div>
         </div>
     </section>
 
     <section class="featured-doctors">
         <div class="container">
-            <h2>Featured Doctors</h2>
+            <h2>Consult Top Specialists – Book Your Appointment</h2>
             
             <div class="filter-doctors-container">
                 <!-- Filter Panel (Left Side) -->
@@ -250,8 +271,66 @@
         </div>
     </section>
 
+    <!-- How It Works Section -->
+    <section class="how-it-works" style="padding: 80px 0; background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 15px;">How It Works</h2>
+                <p style="font-size: 1.1rem; color: #666; max-width: 700px; margin: 0 auto;">Get started in 4 easy steps. From searching a doctor to receiving care — it's all seamless.</p>
+            </div>
+
+            <div class="steps-container" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; position: relative; margin-top: 60px;">
+                <!-- Connecting Line -->
+                <div style="position: absolute; top: 40px; left: 50px; right: 50px; height: 3px; background: linear-gradient(to right, #667eea, #764ba2, #00b894, #f77f00); opacity: 0.3;"></div>
+
+                <!-- Step 1 -->
+                <div class="step-card" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #e8f0ff 0%, #f0f4ff 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);">
+                        <i class="fas fa-search" style="font-size: 2rem; color: #667eea;"></i>
+                    </div>
+                    <div style="position: absolute; top: 0; right: 20px; width: 30px; height: 30px; background: #667eea; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">1</div>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: #1a1a2e; margin-bottom: 15px;">Search & Choose</h3>
+                    <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">Find doctors by specialty, location, rating, or availability. Filter by experience, fees, and language.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #f0e8ff 0%, #f4f0ff 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.2);">
+                        <i class="fas fa-calendar-alt" style="font-size: 2rem; color: #764ba2;"></i>
+                    </div>
+                    <div style="position: absolute; top: 0; right: 20px; width: 30px; height: 30px; background: #764ba2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">2</div>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: #1a1a2e; margin-bottom: 15px;">Book Appointment</h3>
+                    <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">Select a convenient time slot, choose in-person or video consultation, and confirm instantly.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #e8fff0 0%, #f0fff4 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 184, 148, 0.2);">
+                        <i class="fas fa-stethoscope" style="font-size: 2rem; color: #00b894;"></i>
+                    </div>
+                    <div style="position: absolute; top: 0; right: 20px; width: 30px; height: 30px; background: #00b894; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">3</div>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: #1a1a2e; margin-bottom: 15px;">Consult Doctor</h3>
+                    <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">Visit the clinic or connect via secure video call. Share reports and get prescriptions digitally.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #fff8e8 0%, #fffbf0 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(247, 127, 0, 0.2);">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; color: #f77f00;"></i>
+                    </div>
+                    <div style="position: absolute; top: 0; right: 20px; width: 30px; height: 30px; background: #f77f00; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">4</div>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: #1a1a2e; margin-bottom: 15px;">Get Care</h3>
+                    <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">Receive e-prescriptions, order medicines, book follow-ups, and track your health progress.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer class="footer">
         <div class="container">
+            <div style="margin-bottom: 15px;">
+                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 45px; max-width: 200px; object-fit: contain; opacity: 0.95;">
+            </div>
             <p>&copy; 2026 Tabib24x7. All rights reserved.</p>
         </div>
     </footer>
@@ -260,5 +339,62 @@
     <script th:src="@{/js/home-search.js}"></script>
     <!-- Home Filter Script -->
     <script th:src="@{/js/home-filter.js}"></script>
+    <!-- Announcement Bar Script -->
+    <script th:src="@{/js/announcement-bar.js}"></script>
+    
+    <!-- Specialization Show More Script -->
+    <script>
+        let currentVisibleCount = 10; // Start with 2 rows (10 cards)
+        const totalSpecializations = document.querySelectorAll('.spec-card').length;
+        
+        function showMoreSpecializations() {
+            const hiddenCards = document.querySelectorAll('.hidden-spec');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const showLessBtn = document.getElementById('showLessBtn');
+            
+            // Show all remaining cards
+            hiddenCards.forEach(card => {
+                card.classList.remove('hidden-spec');
+                card.style.animation = 'fadeIn 0.5s ease-in-out';
+            });
+            
+            currentVisibleCount = totalSpecializations;
+            
+            // Hide show more button, show show less
+            showMoreBtn.style.display = 'none';
+            showLessBtn.style.display = 'inline-block';
+        }
+        
+        function showLessSpecializations() {
+            const allCards = document.querySelectorAll('.spec-card');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const showLessBtn = document.getElementById('showLessBtn');
+            
+            // Hide all after the first 10
+            allCards.forEach((card, index) => {
+                if (index >= 10) {
+                    card.classList.add('hidden-spec');
+                }
+            });
+            
+            currentVisibleCount = 10;
+            
+            // Reset buttons
+            showMoreBtn.style.display = 'inline-block';
+            showLessBtn.style.display = 'none';
+        }
+        
+        // Initialize button visibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const showLessBtn = document.getElementById('showLessBtn');
+            
+            // If total is 10 or less, hide show more button
+            if (totalSpecializations <= 10) {
+                showMoreBtn.style.display = 'none';
+                showLessBtn.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -39,15 +39,61 @@ public class DataInitializer implements CommandLineRunner {
         // Create Sample Patient
         createSamplePatient();
 
-        // Create Specializations
-        Specialization cardiology = createSpecialization("Cardiology", "Heart and cardiovascular system specialist");
-        Specialization dermatology = createSpecialization("Dermatology", "Skin, hair, and nail specialist");
-        Specialization pediatrics = createSpecialization("Pediatrics", "Child healthcare specialist");
-        Specialization orthopedics = createSpecialization("Orthopedics", "Bone and joint specialist");
-        Specialization neurology = createSpecialization("Neurology", "Nervous system specialist");
-        Specialization gynecology = createSpecialization("Gynecology", "Women's health specialist");
+        // Create Specializations - All 48 specializations
+        createSpecialization("General Practitioner", "Primary care physician for general health concerns");
+        createSpecialization("Dentist", "Oral health and dental care specialist");
+        createSpecialization("Pediatrics", "Child healthcare specialist");
+        createSpecialization("Orthopedics", "Bone and joint specialist");
+        createSpecialization("Diabetologist", "Diabetes and endocrine disorder specialist");
+        createSpecialization("Obstetrics Gynecology", "Women's reproductive health and pregnancy specialist");
+        createSpecialization("Psychiatry", "Mental health specialist");
+        createSpecialization("Dermatology", "Skin, hair, and nail specialist");
+        createSpecialization("Psychologist", "Mental health counselor and therapist");
+        createSpecialization("Oncology", "Cancer specialist");
+        createSpecialization("Homeopathy", "Alternative medicine practitioner");
+        createSpecialization("Ayurveda", "Traditional Indian medicine practitioner");
+        createSpecialization("Pulmonology", "Lung and respiratory system specialist");
+        createSpecialization("Endocrinology", "Hormone and gland specialist");
+        createSpecialization("Ophthalmology", "Eye specialist");
+        createSpecialization("Sexology", "Sexual health specialist");
+        createSpecialization("Internal Medicine", "Adult disease specialist");
+        createSpecialization("Nephrology", "Kidney specialist");
+        createSpecialization("Physiotherapy", "Physical rehabilitation specialist");
+        createSpecialization("Venereology", "Sexually transmitted disease specialist");
+        createSpecialization("Cardiology", "Heart and cardiovascular system specialist");
+        createSpecialization("Leprology", "Leprosy specialist");
+        createSpecialization("General Surgery", "Surgical procedures specialist");
+        createSpecialization("Gastroenterology", "Digestive system specialist");
+        createSpecialization("Neurology", "Nervous system and brain specialist");
+        createSpecialization("Emergency Medicine", "Emergency and trauma care specialist");
+        createSpecialization("Anesthesiology", "Anesthesia and pain management specialist");
+        createSpecialization("Pain Management", "Chronic pain treatment specialist");
+        createSpecialization("Rheumatology", "Arthritis and joint disease specialist");
+        createSpecialization("Dieticians", "Nutrition and diet specialist");
+        createSpecialization("Urology", "Urinary tract specialist");
+        createSpecialization("Neurosurgery", "Brain and nervous system surgeon");
+        createSpecialization("Family Medicine", "Family healthcare specialist");
+        createSpecialization("Hepatology", "Liver disease specialist");
+        createSpecialization("Cardiothoracic Surgery", "Heart and chest surgeon");
+        createSpecialization("Thoracic Surgery", "Chest cavity surgeon");
+        createSpecialization("Naturopathy and Yogic Sciences", "Natural healing and yoga therapist");
+        createSpecialization("Paediatric Orthopaedic", "Children's bone and joint specialist");
+        createSpecialization("Radiology", "Medical imaging specialist");
+        createSpecialization("Haematology", "Blood disorder specialist");
+        createSpecialization("Fitness", "Physical fitness and wellness specialist");
+        createSpecialization("Osteopathy", "Musculoskeletal system specialist");
+        createSpecialization("Plastic Surgery", "Cosmetic and reconstructive surgeon");
+        createSpecialization("Nutrition", "Nutrition and wellness specialist");
+        createSpecialization("Occupational Therapy", "Daily living skills therapist");
+        createSpecialization("ENT", "Ear, Nose, and Throat specialist");
+        createSpecialization("Vascular Surgery", "Blood vessel surgeon");
+        createSpecialization("Infectious Diseases", "Infection and tropical disease specialist");
 
         // Create Doctors with User Accounts (so they can login)
+        Specialization cardiology = specializationRepository.findByName("Cardiology").orElse(null);
+        Specialization dermatology = specializationRepository.findByName("Dermatology").orElse(null);
+        Specialization pediatrics = specializationRepository.findByName("Pediatrics").orElse(null);
+
         Long doctorId = createDoctorWithUser("Dr. Aadil Hassan", "dr.aadil@tabib24x7.com", "doctor123", "+91 9906123456",
                 "MBBS, MD (Cardiology)", "Specialist in interventional cardiology with 12 years of experience",
                 12, cardiology, "Medical Complex, Lal Chowk, Srinagar", 800.0, true,

@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
+            --primary-color: #1E90FF;
+            --secondary-color: #0078D7;
         }
         body {
             background: #f5f7fa;
@@ -194,7 +194,7 @@
             <!-- Sidebar -->
             <div class="col-md-2 sidebar">
                 <h4 class="text-center mb-4">
-                    <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 50px; max-width: 200px; object-fit: contain;">
+                    <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 60px; max-width: 220px; object-fit: contain;">
                 </h4>
                 
                 <!-- Online/Offline Status Toggle -->
@@ -506,37 +506,87 @@
                             <form id="profileForm">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Name</label>
-                                        <input type="text" class="form-control" id="profileName">
+                                        <label class="form-label">Name *</label>
+                                        <input type="text" class="form-control" id="profileName" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Email</label>
+                                        <label class="form-label">Email *</label>
                                         <input type="email" class="form-control" id="profileEmail" readonly>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Phone</label>
-                                        <input type="tel" class="form-control" id="profilePhone">
+                                        <label class="form-label">Phone *</label>
+                                        <input type="tel" class="form-control" id="profilePhone" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Qualification</label>
-                                        <input type="text" class="form-control" id="profileQualification">
+                                        <label class="form-label">Qualification *</label>
+                                        <input type="text" class="form-control" id="profileQualification" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Years of Experience *</label>
+                                        <input type="number" class="form-control" id="profileYearsExp" min="0" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Specialization *</label>
+                                        <select class="form-select" id="profileSpecialization" required>
+                                            <option value="">Select Specialization</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Experience</label>
+                                    <label class="form-label">Experience Details</label>
                                     <textarea class="form-control" id="profileExperience" rows="3"></textarea>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Clinic Address</label>
-                                        <textarea class="form-control" id="profileClinicAddress" rows="2"></textarea>
+                                        <label class="form-label">Clinic Address *</label>
+                                        <textarea class="form-control" id="profileClinicAddress" rows="2" required></textarea>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Consultation Fee</label>
-                                        <input type="number" class="form-control" id="profileConsultationFee">
+                                        <label class="form-label">Consultation Fee (₹) *</label>
+                                        <input type="number" class="form-control" id="profileConsultationFee" min="0" step="50" required>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">District *</label>
+                                        <input type="text" class="form-control" id="profileDistrict" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">State *</label>
+                                        <input type="text" class="form-control" id="profileState" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">City</label>
+                                        <input type="text" class="form-control" id="profileCity">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Area</label>
+                                        <input type="text" class="form-control" id="profileArea">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Latitude</label>
+                                        <input type="text" class="form-control" id="profileLatitude">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Longitude</label>
+                                        <input type="text" class="form-control" id="profileLongitude">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Image URL</label>
+                                    <input type="text" class="form-control" id="profileImage">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Joining Date</label>
+                                    <input type="date" class="form-control" id="profileJoiningDate">
                                 </div>
 
                                 <!-- Specializations -->
@@ -1306,6 +1356,29 @@
             }
         }
 
+        // Load specializations
+        async function loadSpecializations(selectedId) {
+            try {
+                const response = await fetch('/api/specializations');
+                const specializations = await response.json();
+                
+                const select = document.getElementById('profileSpecialization');
+                select.innerHTML = '<option value="">Select Specialization</option>';
+                
+                specializations.forEach(spec => {
+                    const option = document.createElement('option');
+                    option.value = spec.id;
+                    option.textContent = spec.name;
+                    if (selectedId && spec.id === selectedId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+
         // Load profile
         async function loadProfile() {
             try {
@@ -1316,11 +1389,23 @@
                 document.getElementById('profileEmail').value = doctor.email || '';
                 document.getElementById('profilePhone').value = doctor.phone || '';
                 document.getElementById('profileQualification').value = doctor.qualification || '';
+                document.getElementById('profileYearsExp').value = doctor.yearsOfExperience || 0;
                 document.getElementById('profileExperience').value = doctor.experience || '';
                 document.getElementById('profileClinicAddress').value = doctor.clinicAddress || '';
-                document.getElementById('profileConsultationFee').value = doctor.consultationFee || '';
+                document.getElementById('profileConsultationFee').value = doctor.consultationFee || 0;
+                document.getElementById('profileDistrict').value = doctor.district || '';
+                document.getElementById('profileState').value = doctor.state || '';
+                document.getElementById('profileCity').value = doctor.city || '';
+                document.getElementById('profileArea').value = doctor.area || '';
+                document.getElementById('profileLatitude').value = doctor.latitude || '';
+                document.getElementById('profileLongitude').value = doctor.longitude || '';
+                document.getElementById('profileImage').value = doctor.image || '';
+                document.getElementById('profileJoiningDate').value = doctor.joiningDate || '';
                 document.getElementById('profileSpecializations').value = doctor.specializations || '';
                 document.getElementById('doctorName').textContent = doctor.name || 'Doctor';
+                
+                // Load specializations
+                loadSpecializations(doctor.specialization?.id);
 
                 // Load education
                 if (doctor.educations && doctor.educations.length > 0) {
@@ -1375,10 +1460,20 @@
                 name: document.getElementById('profileName').value,
                 phone: document.getElementById('profilePhone').value,
                 qualification: document.getElementById('profileQualification').value,
+                yearsOfExperience: parseInt(document.getElementById('profileYearsExp').value),
                 experience: document.getElementById('profileExperience').value,
                 clinicAddress: document.getElementById('profileClinicAddress').value,
+                district: document.getElementById('profileDistrict').value,
+                state: document.getElementById('profileState').value,
+                city: document.getElementById('profileCity').value,
+                area: document.getElementById('profileArea').value,
+                latitude: document.getElementById('profileLatitude').value,
+                longitude: document.getElementById('profileLongitude').value,
+                image: document.getElementById('profileImage').value,
+                joiningDate: document.getElementById('profileJoiningDate').value,
                 consultationFee: parseFloat(document.getElementById('profileConsultationFee').value),
                 specializations: document.getElementById('profileSpecializations').value,
+                specializationId: parseInt(document.getElementById('profileSpecialization').value) || null,
                 educations: educations,
                 services: services
             };
@@ -1696,5 +1791,14 @@
             }
         };
     </script>
+
+    <footer class="footer" style="background: linear-gradient(135deg, #1E90FF 0%, #0078D7 100%); color: #fff; text-align: center; padding: 20px 0; margin-top: 40px; border-top: 3px solid rgba(255, 255, 255, 0.3);">
+        <div class="container">
+            <div style="margin-bottom: 10px;">
+                <img src="/images/tabib24x7-logo.png" alt="Tabib24x7" style="height: 40px; max-width: 180px; object-fit: contain; opacity: 0.95; filter: brightness(0) invert(1);">
+            </div>
+            <p style="margin: 0; opacity: 0.95;">&copy; 2026 Tabib24x7. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

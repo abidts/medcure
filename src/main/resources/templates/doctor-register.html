@@ -108,12 +108,6 @@
                                 <label class="form-label">Specialization *</label>
                                 <select class="form-select" id="specializationId" required>
                                     <option value="">Select Specialization</option>
-                                    <option value="1">Cardiology</option>
-                                    <option value="2">Dermatology</option>
-                                    <option value="3">Pediatrics</option>
-                                    <option value="4">Orthopedics</option>
-                                    <option value="5">Neurology</option>
-                                    <option value="6">Gynecology</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -201,6 +195,31 @@
                 alertDiv.style.display = 'block';
             }
         });
+    </script>
+
+    <script>
+        // Load specializations dynamically on page load
+        async function loadSpecializations() {
+            try {
+                const response = await fetch('/api/specializations');
+                const specializations = await response.json();
+                
+                const select = document.getElementById('specializationId');
+                select.innerHTML = '<option value="">Select Specialization</option>';
+                
+                specializations.forEach(spec => {
+                    const option = document.createElement('option');
+                    option.value = spec.id;
+                    option.textContent = spec.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+
+        // Load specializations when page loads
+        document.addEventListener('DOMContentLoaded', loadSpecializations);
     </script>
 </body>
 </html>

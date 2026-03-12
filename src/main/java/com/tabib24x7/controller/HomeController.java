@@ -12,6 +12,7 @@ import com.tabib24x7.service.SpecializationService;
 import com.tabib24x7.service.DoctorAvailabilityService;
 import com.tabib24x7.service.DoctorEducationService;
 import com.tabib24x7.service.DoctorServicesService;
+import com.tabib24x7.service.AboutUsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,6 +46,9 @@ public class HomeController {
 
     @Autowired
     private DoctorServicesService doctorServicesService;
+
+    @Autowired
+    private AboutUsService aboutUsService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -218,6 +222,13 @@ public class HomeController {
     @GetMapping("/doctor-register")
     public String doctorRegisterPage() {
         return "doctor-register";
+    }
+
+    @GetMapping("/about-us")
+    public String aboutUsPage(Model model) {
+        aboutUsService.getActiveAboutUs().ifPresent(aboutUs -> 
+            model.addAttribute("aboutUs", aboutUs));
+        return "about-us";
     }
 
     @GetMapping("/doctor-dashboard")

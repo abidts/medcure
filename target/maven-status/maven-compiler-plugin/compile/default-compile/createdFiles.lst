@@ -1,13 +1,16 @@
 com/tabib24x7/model/VideoCallRate.class
+com/tabib24x7/service/AboutUsService.class
 com/tabib24x7/model/Appointment$ConsultationType.class
 com/tabib24x7/service/impl/PatientServiceImpl.class
 com/tabib24x7/service/LocationService.class
+com/tabib24x7/model/Announcement$AnnouncementType.class
 com/tabib24x7/model/MedicalReport.class
 com/tabib24x7/service/impl/DoctorEducationServiceImpl.class
 com/tabib24x7/service/UserService.class
 com/tabib24x7/controller/AppointmentController.class
 com/tabib24x7/repository/UserRepository.class
 com/tabib24x7/config/DataInitializer.class
+com/tabib24x7/model/AboutUs.class
 com/tabib24x7/controller/AuthController$LoginRequest.class
 com/tabib24x7/config/DoctorDistrictMigration.class
 com/tabib24x7/service/StaffService.class
@@ -22,9 +25,11 @@ com/tabib24x7/model/DoctorAvailability.class
 com/tabib24x7/service/DoctorServicesService.class
 com/tabib24x7/controller/SpecializationController.class
 com/tabib24x7/model/Specialization.class
+com/tabib24x7/model/Announcement.class
 com/tabib24x7/service/WalletService.class
 com/tabib24x7/service/CallService.class
 com/tabib24x7/service/VideoCallRequestService.class
+com/tabib24x7/service/impl/AboutUsServiceImpl.class
 com/tabib24x7/controller/PatientController.class
 com/tabib24x7/repository/DoctorEducationRepository.class
 com/tabib24x7/tabib24x7/Tabib24x7Application.class
@@ -55,9 +60,11 @@ com/tabib24x7/service/impl/AdminServiceImpl.class
 com/tabib24x7/controller/HomeController.class
 com/tabib24x7/model/Admin.class
 com/tabib24x7/model/Patient.class
+com/tabib24x7/controller/AnnouncementController.class
 com/tabib24x7/controller/CallController.class
 com/tabib24x7/controller/VideoCallRequestController.class
 com/tabib24x7/service/impl/UserServiceImpl.class
+com/tabib24x7/controller/AboutUsController.class
 com/tabib24x7/service/VideoCallRateService.class
 com/tabib24x7/repository/PatientRepository.class
 com/tabib24x7/model/DoctorStatus$Status.class
@@ -65,8 +72,10 @@ com/tabib24x7/service/AppointmentService.class
 com/tabib24x7/service/SpecializationService.class
 com/tabib24x7/model/DoctorEducation.class
 com/tabib24x7/service/AdminService.class
+com/tabib24x7/service/AnnouncementService.class
 com/tabib24x7/repository/MedicalReportRepository.class
 com/tabib24x7/repository/DoctorRepository.class
+com/tabib24x7/service/impl/AnnouncementServiceImpl.class
 com/tabib24x7/model/User.class
 com/tabib24x7/model/DoctorStatus.class
 com/tabib24x7/repository/DoctorAvailabilityRepository.class
@@ -85,6 +94,7 @@ com/tabib24x7/repository/DoctorStatusRepository.class
 com/tabib24x7/controller/VideoCallRateController.class
 com/tabib24x7/controller/DoctorRegistrationController$DoctorRegistrationRequest.class
 com/tabib24x7/repository/VideoCallRequestRepository.class
+com/tabib24x7/repository/AboutUsRepository.class
 com/tabib24x7/controller/ReviewController.class
 com/tabib24x7/service/impl/DoctorServicesServiceImpl.class
 com/tabib24x7/repository/AdminRepository.class
@@ -100,4 +110,5 @@ com/tabib24x7/model/WalletTransaction.class
 com/tabib24x7/service/impl/DoctorAvailabilityServiceImpl.class
 com/tabib24x7/controller/DoctorDashboardController.class
 com/tabib24x7/controller/AdminController$CreateAdminRequest.class
+com/tabib24x7/repository/AnnouncementRepository.class
 com/tabib24x7/model/Wallet.class

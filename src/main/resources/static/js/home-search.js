@@ -99,42 +99,22 @@ class SearchManager {
         `;
 
         if (this.districts.length > 0) {
-            html += `
-                <div class="dropdown-header">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Districts</span>
-                </div>
-            `;
-
             this.districts.forEach(district => {
                 html += `
                     <div class="dropdown-item" onclick="selectLocation('${district}')">
                         <i class="fas fa-map-marked-alt"></i>
-                        <div>
-                            <div class="item-text">${district}</div>
-                            <div class="item-sub">District</div>
-                        </div>
+                        <div class="item-text">${district}</div>
                     </div>
                 `;
             });
         }
 
         if (this.locations.length > 0) {
-            html += `
-                <div class="dropdown-header">
-                    <i class="fas fa-city"></i>
-                    <span>Cities</span>
-                </div>
-            `;
-
             this.locations.forEach(city => {
                 html += `
                     <div class="dropdown-item" onclick="selectLocation('${city}')">
                         <i class="fas fa-city"></i>
-                        <div>
-                            <div class="item-text">${city}</div>
-                            <div class="item-sub">City</div>
-                        </div>
+                        <div class="item-text">${city}</div>
                     </div>
                 `;
             });
@@ -178,21 +158,11 @@ class SearchManager {
         `;
 
         if (filteredDistricts.length > 0) {
-            html += `
-                <div class="dropdown-header">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Districts</span>
-                </div>
-            `;
-
             filteredDistricts.forEach(district => {
                 html += `
                     <div class="dropdown-item" onclick="selectLocation('${district}')">
                         <i class="fas fa-map-marked-alt"></i>
-                        <div>
-                            <div class="item-text">${district}</div>
-                            <div class="item-sub">District</div>
-                        </div>
+                        <div class="item-text">${district}</div>
                     </div>
                 `;
             });
@@ -210,10 +180,7 @@ class SearchManager {
                 html += `
                     <div class="dropdown-item" onclick="selectLocation('${city}')">
                         <i class="fas fa-search"></i>
-                        <div>
-                            <div class="item-text">${city}</div>
-                            <div class="item-sub">City</div>
-                        </div>
+                        <div class="item-text">${city}</div>
                     </div>
                 `;
             });

@@ -42,6 +42,14 @@ public class AdminController {
     @Autowired
     private DoctorRepository doctorRepository;
 
+    // Get doctor by ID
+    @GetMapping("/doctors/{id}")
+    public ResponseEntity<?> getDoctorById(@PathVariable Long id) {
+        Optional<Doctor> doctorOpt = doctorService.getDoctorById(id);
+        return doctorOpt.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // Create admin user
     @PostMapping("/create-admin")
     public ResponseEntity<?> createAdmin(@RequestBody CreateAdminRequest request) {
@@ -205,6 +213,49 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userRepository.findAll());
+    }
+
+    // Delete user (with proper handling of foreign key constraints)
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            Optional<User> userOpt = userRepository.findById(id);
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                
+                // Check if user is a doctor - delete doctor first
+                if (user.getRole() == User.UserRole.DOCTOR) {
+                    doctorRepository.findByUserId(user.getId()).ifPresent(doctor -> {
+                        doctorRepository.delete(doctor);
+                    });
+                }
+                
+                // Check if user is an admin - delete admin first
+                if (user.getRole() == User.UserRole.ADMIN || user.getRole() == User.UserRole.SUPER_ADMIN) {
+                    adminRepository.findByUserId(user.getId()).ifPresent(admin -> {
+                        adminRepository.delete(admin);
+                    });
+                }
+                
+                // Now delete the user
+                userRepository.delete(user);
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "User deleted successfully");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "User not found");
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Cannot delete user: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     // Get dashboard statistics for admin

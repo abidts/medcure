@@ -1,7 +1,9 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/config/DataInitializer.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/config/DoctorDistrictMigration.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/config/WebSocketConfig.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/AboutUsController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/AdminController.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/AnnouncementController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/AppointmentController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/AuthController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/CallController.java
@@ -21,7 +23,9 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/VideoCallRequestController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/WalletController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/dto/SignalMessage.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/AboutUs.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Admin.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Announcement.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Appointment.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Doctor.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/DoctorAvailability.java
@@ -38,7 +42,9 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/VideoCallRequest.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Wallet.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/WalletTransaction.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/AboutUsRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/AdminRepository.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/AnnouncementRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/AppointmentRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/DoctorAvailabilityRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/DoctorEducationRepository.java
@@ -54,7 +60,9 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/VideoCallRateRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/VideoCallRequestRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/WalletRepository.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/AboutUsService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/AdminService.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/AnnouncementService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/AppointmentService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/CallService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/CloudinaryService.java
@@ -73,7 +81,9 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/VideoCallRateService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/VideoCallRequestService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/WalletService.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/AboutUsServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/AdminServiceImpl.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/AnnouncementServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/AppointmentServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/DoctorAvailabilityServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/DoctorEducationServiceImpl.java
