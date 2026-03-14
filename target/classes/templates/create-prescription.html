@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Prescription - Tabib24x7</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .medicine-row { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .add-medicine-btn { background: #00b894; color: white; border: none; }
+        .remove-medicine-btn { background: #dc3545; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2><i class="fas fa-file-prescription"></i> Create Prescription</h2>
+        
+        <div th:if="${appointment != null}" class="alert alert-info">
+            <strong>Patient:</strong> <span th:text="${appointment.patient.name}">Patient Name</span><br>
+            <strong>Doctor:</strong> <span th:text="${appointment.doctor.name}">Doctor Name</span><br>
+            <strong>Date:</strong> <span th:text="${appointment.appointmentDate}">Date</span>
+            <strong>Time:</strong> <span th:text="${appointment.appointmentTime}">Time</span>
+        </div>
+
+        <form id="prescriptionForm" th:action="@{/api/prescriptions}" method="post">
+            <input type="hidden" name="patientId" th:value="${appointment != null ? appointment.patient.id : ''}">
+            <input type="hidden" name="doctorId" th:value="${doctorId}">
+            <input type="hidden" name="appointmentId" th:value="${appointment != null ? appointment.id : ''}">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Diagnosis</label>
+                    <textarea class="form-control" name="diagnosis" rows="3" placeholder="Diagnosis details"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Symptoms</label>
+                    <textarea class="form-control" name="symptoms" rows="3" placeholder="Observed symptoms"></textarea>
+                </div>
+            </div>
+
+            <h4 class="mt-4"><i class="fas fa-pills"></i> Medicines</h4>
+            <div id="medicinesContainer">
+                <!-- Medicine rows will be added here -->
+            </div>
+            <button type="button" class="btn add-medicine-btn mt-2" onclick="addMedicineRow()">
+                <i class="fas fa-plus"></i> Add Medicine
+            </button>
+
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">General Advice</label>
+                    <textarea class="form-control" name="generalAdvice" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Dietary Advice</label>
+                    <textarea class="form-control" name="dietaryAdvice" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Lifestyle Changes</label>
+                    <textarea class="form-control" name="lifestyleChanges" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Follow-up Instructions</label>
+                    <textarea class="form-control" name="followUpInstructions" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Follow-up Days</label>
+                    <input type="number" class="form-control" name="followUpDays" placeholder="e.g., 7" min="1">
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Save Prescription
+                </button>
+                <a href="/doctor/dashboard" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let medicineCount = 0;
+
+        function addMedicineRow() {
+            medicineCount++;
+            const container = document.getElementById('medicinesContainer');
+            const row = document.createElement('div');
+            row.className = 'medicine-row';
+            row.id = 'medicine-' + medicineCount;
+            row.innerHTML = `
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Medicine Name</label>
+                        <input type="text" class="form-control" name="medicineName[]" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Dosage</label>
+                        <input type="text" class="form-control" name="dosage[]" placeholder="e.g., 500mg" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Frequency</label>
+                        <input type="text" class="form-control" name="frequency[]" placeholder="e.g., Twice daily" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Duration (Days)</label>
+                        <input type="number" class="form-control" name="durationDays[]" min="1" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Before Food?</label>
+                        <select class="form-control" name="beforeFood[]">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 mb-2 d-flex align-items-end">
+                        <button type="button" class="btn remove-medicine-btn w-100" onclick="removeMedicineRow(${medicineCount})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="form-label">Instructions</label>
+                        <input type="text" class="form-control" name="instructions[]" placeholder="e.g., Take after meals">
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeMedicineRow(id) {
+            const row = document.getElementById('medicine-' + id);
+            if (row) row.remove();
+        }
+
+        // Add initial medicine row
+        addMedicineRow();
+
+        // Handle form submission
+        document.getElementById('prescriptionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const medicines = [];
+            
+            const medicineNames = formData.getAll('medicineName[]');
+            const dosages = formData.getAll('dosage[]');
+            const frequencies = formData.getAll('frequency[]');
+            const durationDays = formData.getAll('durationDays[]');
+            const beforeFood = formData.getAll('beforeFood[]');
+            const instructions = formData.getAll('instructions[]');
+            
+            for (let i = 0; i < medicineNames.length; i++) {
+                medicines.push({
+                    medicineName: medicineNames[i],
+                    dosage: dosages[i],
+                    frequency: frequencies[i],
+                    durationDays: parseInt(durationDays[i]),
+                    beforeFood: beforeFood[i] === 'true',
+                    instructions: instructions[i]
+                });
+            }
+            
+            const prescriptionData = {
+                patientId: parseInt(formData.get('patientId')) || null,
+                doctorId: parseInt(formData.get('doctorId')) || null,
+                appointmentId: parseInt(formData.get('appointmentId')) || null,
+                diagnosis: formData.get('diagnosis'),
+                symptoms: formData.get('symptoms'),
+                generalAdvice: formData.get('generalAdvice'),
+                dietaryAdvice: formData.get('dietaryAdvice'),
+                lifestyleChanges: formData.get('lifestyleChanges'),
+                followUpInstructions: formData.get('followUpInstructions'),
+                followUpDays: formData.get('followUpDays') ? parseInt(formData.get('followUpDays')) : null,
+                medicines: medicines
+            };
+            
+            try {
+                const response = await fetch('/api/prescriptions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(prescriptionData)
+                });
+                
+                if (response.ok) {
+                    alert('Prescription created successfully!');
+                    window.location.href = '/doctor/dashboard?doctorId=' + formData.get('doctorId');
+                } else {
+                    alert('Error creating prescription');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

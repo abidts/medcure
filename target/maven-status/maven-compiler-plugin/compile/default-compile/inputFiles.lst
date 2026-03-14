@@ -16,6 +16,7 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/PatientApiController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/PatientController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/PatientPortalController.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/PrescriptionController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/ReviewController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/SpecializationController.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/controller/StaffController.java
@@ -34,6 +35,8 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/DoctorStatus.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/MedicalReport.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Patient.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Prescription.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/PrescriptionMedicine.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Review.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Specialization.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/model/Staff.java
@@ -53,6 +56,8 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/DoctorStatusRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/MedicalReportRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/PatientRepository.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/PrescriptionMedicineRepository.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/PrescriptionRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/ReviewRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/SpecializationRepository.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/repository/StaffRepository.java
@@ -74,6 +79,7 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/LocationService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/MedicalReportService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/PatientService.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/PrescriptionService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/ReviewService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/SpecializationService.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/StaffService.java
@@ -90,6 +96,7 @@
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/DoctorServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/DoctorServicesServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/PatientServiceImpl.java
+/Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/PrescriptionServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/ReviewServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/SpecializationServiceImpl.java
 /Users/abc/Documents/medcure/src/main/java/com/tabib24x7/service/impl/StaffServiceImpl.java

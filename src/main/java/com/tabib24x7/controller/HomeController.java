@@ -13,6 +13,7 @@ import com.tabib24x7.service.DoctorAvailabilityService;
 import com.tabib24x7.service.DoctorEducationService;
 import com.tabib24x7.service.DoctorServicesService;
 import com.tabib24x7.service.AboutUsService;
+import com.tabib24x7.service.PrescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +50,9 @@ public class HomeController {
 
     @Autowired
     private AboutUsService aboutUsService;
+
+    @Autowired
+    private PrescriptionService prescriptionService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -320,5 +324,36 @@ public class HomeController {
     public String doctorVideoCallRequest(@RequestParam Long requestId, Model model) {
         model.addAttribute("requestId", requestId);
         return "video-call";
+    }
+
+    /**
+     * Create prescription page for doctors
+     */
+    @GetMapping("/doctor/prescription/create")
+    public String createPrescriptionPage(
+            @RequestParam(required = false) Long appointmentId,
+            @RequestParam(required = false) Long doctorId,
+            Model model) {
+        
+        if (appointmentId != null) {
+            Appointment appointment = appointmentService.getAppointmentById(appointmentId)
+                    .orElseThrow(() -> new RuntimeException("Appointment not found"));
+            model.addAttribute("appointment", appointment);
+            model.addAttribute("doctorId", appointment.getDoctor().getId());
+        } else if (doctorId != null) {
+            model.addAttribute("doctorId", doctorId);
+        }
+        
+        return "create-prescription";
+    }
+
+    /**
+     * View patient prescriptions
+     */
+    @GetMapping("/patient/prescriptions")
+    public String patientPrescriptions(@RequestParam Long patientId, Model model) {
+        model.addAttribute("prescriptions", prescriptionService.getPrescriptionsByPatientId(patientId));
+        model.addAttribute("patientId", patientId);
+        return "patient-prescriptions";
     }
 }

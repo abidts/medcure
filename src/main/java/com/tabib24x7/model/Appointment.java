@@ -1,5 +1,6 @@
 package com.tabib24x7.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,6 +53,19 @@ public class Appointment {
 
     @Column
     private LocalDate createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "follow_up_to_id")
+    @JsonIgnore
+    private Appointment followUpTo;
+
+    @OneToMany(mappedBy = "followUpTo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private java.util.List<Appointment> followUps;
+
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Prescription prescription;
 
     @PrePersist
     protected void onCreate() {

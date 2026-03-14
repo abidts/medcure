@@ -4,6 +4,7 @@ import com.tabib24x7.model.Doctor;
 import com.tabib24x7.model.Specialization;
 import com.tabib24x7.model.User;
 import com.tabib24x7.repository.DoctorRepository;
+import com.tabib24x7.repository.ReviewRepository;
 import com.tabib24x7.repository.SpecializationRepository;
 import com.tabib24x7.repository.UserRepository;
 import com.tabib24x7.service.DoctorService;
@@ -27,6 +28,9 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Override
     public List<Doctor> getAllDoctors() {
@@ -93,12 +97,14 @@ public class DoctorServiceImpl implements DoctorService {
     public Double getAverageRating(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
-        return doctorRepository.findById(doctorId).map(d -> 0.0).orElse(0.0);
+        return reviewRepository.getAverageRatingByDoctor(doctor);
     }
 
     @Override
     public Long getReviewCount(Long doctorId) {
-        return 0L;
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        return reviewRepository.getCountByDoctor(doctor);
     }
 
     @Override
