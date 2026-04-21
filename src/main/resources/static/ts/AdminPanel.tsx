@@ -273,7 +273,7 @@ const AdminPanel: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-inter">
+    <div className="admin-panel flex min-h-screen bg-[#F8FAFC] font-inter">
       {/* Sidebar */}
       <aside className="w-80 bg-slate-950 text-white flex flex-col fixed inset-y-0 left-0 z-50 overflow-hidden shadow-2xl">
          <div className="p-10">

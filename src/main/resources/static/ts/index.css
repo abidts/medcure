@@ -332,36 +332,77 @@ input::placeholder { color: var(--slate-300); }
 input:focus { outline: none; }
 
 button {
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
-  color: var(--text-primary);
+  border: none !important;
+  background: transparent !important;
+  color: var(--blue-600) !important;
   font-family: inherit;
-  border-radius: 14px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    0 10px 24px rgba(16, 33, 41, 0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 button:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.95) inset,
-    0 14px 28px rgba(16, 33, 41, 0.16);
-  filter: saturate(1.03);
+  color: var(--blue-700);
 }
 
 button:active {
-  transform: translateY(0);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.75) inset,
-    0 7px 14px rgba(16, 33, 41, 0.14);
+  color: var(--blue-700);
 }
 
 button:disabled {
+  opacity: 0.55;
+  color: var(--text-muted);
+}
+
+/* Keep admin dashboard buttons controlled by their utility classes */
+.admin-panel button {
+  border: none;
+  box-shadow: none;
+  filter: none;
+  backdrop-filter: none;
+}
+
+.admin-panel button:hover,
+.admin-panel button:active {
   transform: none;
   box-shadow: none;
-  filter: grayscale(0.08);
+  filter: none;
+}
+
+/* Admin layout stability to prevent floating/overlap issues */
+.admin-panel aside {
+  width: 20rem;
+  z-index: 40;
+}
+
+.admin-panel main {
+  margin-left: 20rem;
+  width: calc(100% - 20rem);
+  overflow-x: hidden;
+}
+
+.admin-panel nav button {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1024px) {
+  .admin-panel {
+    flex-direction: column;
+  }
+
+  .admin-panel aside {
+    position: relative !important;
+    width: 100% !important;
+    inset: auto !important;
+    height: auto;
+  }
+
+  .admin-panel main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 1.5rem !important;
+  }
 }
 
 .navbar { height: 80px; }
@@ -685,52 +726,39 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.82rem 1.1rem;
-  border-radius: 999px;
+  padding: 0;
+  border-radius: 0;
   font-weight: 800;
   font-size: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: none;
   cursor: pointer;
-  backdrop-filter: blur(12px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    0 12px 24px rgba(16, 33, 41, 0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  background: transparent;
+  box-shadow: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .site-button:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.95) inset,
-    0 16px 30px rgba(16, 33, 41, 0.15);
+  color: var(--blue-700);
 }
 
 .site-button:active {
-  transform: translateY(0);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.75) inset,
-    0 8px 16px rgba(16, 33, 41, 0.13);
+  color: var(--blue-700);
 }
 
 .site-button-primary {
-  background: linear-gradient(180deg, #2bb89b 0%, var(--blue-600) 100%);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.28);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.35) inset,
-    0 14px 28px rgba(20, 125, 106, 0.32);
+  background: transparent;
+  color: var(--blue-600);
 }
 
 .site-button-secondary {
-  background: linear-gradient(180deg, #ffffff 0%, #f0f4f8 100%);
-  color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.82);
+  background: transparent;
+  color: var(--text-secondary);
 }
 
 .site-header .site-button {
-  min-height: 42px;
-  padding-left: 1.05rem;
-  padding-right: 1.05rem;
+  min-height: auto;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .mobile-menu-toggle {
