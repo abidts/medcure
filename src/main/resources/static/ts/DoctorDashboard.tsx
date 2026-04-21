@@ -23,6 +23,9 @@ const DoctorDashboard: React.FC = () => {
   const [availabilities, setAvailabilities] = useState<any[]>([]);
   const [appointmentFilter, setAppointmentFilter] = useState('today');
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [pendingImagePreview, setPendingImagePreview] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [videoRequests, setVideoRequests] = useState<any[]>([]);
   const [staff, setStaff] = useState<any[]>([]);
@@ -231,6 +234,7 @@ const DoctorDashboard: React.FC = () => {
       clinicAddress: doctor?.clinicAddress || '',
       consultationFee: doctor?.consultationFee || 0,
       specializations: doctor?.specializations || '',
+      image: doctor?.image || '',
       educations: doctor?.educations || [],
       services: doctor?.services || []
     });
@@ -288,6 +292,100 @@ const DoctorDashboard: React.FC = () => {
   const handleRemoveService = (index: number) => {
     const newServices = profileForm.services.filter((_: any, i: number) => i !== index);
     setProfileForm({ ...profileForm, services: newServices });
+  };
+
+  const createCenterSquareCroppedFile = async (file: File): Promise<File> => {
+    const imageUrl = URL.createObjectURL(file);
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = imageUrl;
+      });
+
+      const cropSize = Math.min(img.width, img.height);
+      const sx = (img.width - cropSize) / 2;
+      const sy = (img.height - cropSize) / 2;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = cropSize;
+      canvas.height = cropSize;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return file;
+
+      ctx.drawImage(img, sx, sy, cropSize, cropSize, 0, 0, cropSize, cropSize);
+
+      const blob: Blob | null = await new Promise((resolve) =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.92)
+      );
+
+      if (!blob) return file;
+      return new File([blob], `profile-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    } finally {
+      URL.revokeObjectURL(imageUrl);
+    }
+  };
+
+  const handleProfileImageUpload = async (file: File | null) => {
+    const doctorId = localStorage.getItem('doctorId');
+    if (!doctorId || !file) return;
+    setUploadingImage(true);
+    try {
+      const croppedFile = await createCenterSquareCroppedFile(file);
+      const formData = new FormData();
+      formData.append('file', croppedFile);
+      const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}/image`, {
+        method: 'POST',
+        body: formData
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfileForm((prev: any) => ({ ...prev, image: data.image }));
+        setDoctor((prev: any) => ({ ...prev, image: data.image }));
+        setSuccessMessage('Profile picture updated');
+        setTimeout(() => setSuccessMessage(null), 2500);
+      }
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+    } finally {
+      setUploadingImage(false);
+      setPendingImageFile(null);
+      if (pendingImagePreview) {
+        URL.revokeObjectURL(pendingImagePreview);
+      }
+      setPendingImagePreview(null);
+    }
+  };
+
+  const handleRemoveProfileImage = async () => {
+    const doctorId = localStorage.getItem('doctorId');
+    if (!doctorId) return;
+    try {
+      const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}/image`, { method: 'DELETE' });
+      if (res.ok) {
+        setProfileForm((prev: any) => ({ ...prev, image: '' }));
+        setDoctor((prev: any) => ({ ...prev, image: '' }));
+        setSuccessMessage('Profile picture removed');
+        setTimeout(() => setSuccessMessage(null), 2500);
+      }
+    } catch (error) {
+      console.error('Error removing profile image:', error);
+    }
+  };
+
+  const handleSelectPendingImage = (file: File | null) => {
+    if (!file) return;
+    if (pendingImagePreview) URL.revokeObjectURL(pendingImagePreview);
+    const preview = URL.createObjectURL(file);
+    setPendingImageFile(file);
+    setPendingImagePreview(preview);
+  };
+
+  const handleCancelPendingImage = () => {
+    setPendingImageFile(null);
+    if (pendingImagePreview) URL.revokeObjectURL(pendingImagePreview);
+    setPendingImagePreview(null);
   };
 
   const fetchAvailabilities = async () => {
@@ -564,14 +662,12 @@ const DoctorDashboard: React.FC = () => {
             <div className="flex items-center gap-4">
                <div 
                   onClick={handleToggleOnline}
-                  className="bg-white rounded-2xl px-4 py-2 flex items-center gap-3 shadow-sm border border-slate-200 cursor-pointer hover:bg-slate-50 transition-all"
+                  className="bg-white rounded-2xl px-4 py-2 flex items-center gap-2 shadow-sm border border-slate-200 cursor-pointer hover:bg-slate-50 transition-all"
                 >
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`text-sm font-bold ${isOnline ? 'text-green-600' : 'text-red-600'}`}>
                     {isOnline ? 'Online' : 'Offline'}
                   </span>
-                  <div className={`w-11 h-6 rounded-full relative transition-all ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`}>
-                     <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all shadow-sm ${isOnline ? 'right-0.5' : 'left-0.5'}`}></div>
-                  </div>
                </div>
                <button 
                  onClick={handleRefresh}
@@ -665,8 +761,12 @@ const DoctorDashboard: React.FC = () => {
                  )}
                  <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-sm">
                     <div className="flex flex-col md:flex-row gap-12 items-center mb-12 pb-12 border-b border-slate-50">
-                       <div className="w-32 h-32 bg-blue-600 rounded-[32px] flex items-center justify-center text-white text-4xl font-black shadow-xl shadow-blue-100">
-                          {doctor?.name?.[0] || 'D'}
+                       <div className="w-32 h-32 bg-blue-600 rounded-[32px] overflow-hidden flex items-center justify-center text-white text-4xl font-black shadow-xl shadow-blue-100">
+                          {doctor?.image ? (
+                            <img src={doctor.image} alt="Doctor profile" className="w-full h-full object-cover" />
+                          ) : (
+                            <>{doctor?.name?.[0] || 'D'}</>
+                          )}
                        </div>
                        <div className="flex-1 text-center md:text-left">
                           <div className="flex items-center justify-between">
@@ -678,16 +778,32 @@ const DoctorDashboard: React.FC = () => {
                               </div>
                             </div>
                             {!editingProfile && (
-                              <button onClick={handleEditProfile} className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
-                                <Edit size={20} />
-                              </button>
+                              <div className="flex items-center gap-3">
+                                <label className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl cursor-pointer text-xs font-bold hover:bg-slate-200 transition-all">
+                                  {uploadingImage ? 'Uploading...' : 'Upload Photo'}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => handleSelectPendingImage(e.target.files?.[0] || null)}
+                                  />
+                                </label>
+                                {doctor?.image && (
+                                  <button onClick={handleRemoveProfileImage} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl text-xs font-bold hover:bg-red-200 transition-all">
+                                    Remove
+                                  </button>
+                                )}
+                                <button onClick={handleEditProfile} className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
+                                  <Edit size={20} />
+                                </button>
+                              </div>
                             )}
                           </div>
                        </div>
                     </div>
 
                     {editingProfile ? (
-                      <div className="space-y-6">
+                      <div className="space-y-6 max-h-[68vh] overflow-y-auto pr-2">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Name</label>
@@ -794,7 +910,7 @@ const DoctorDashboard: React.FC = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[68vh] overflow-y-auto pr-2">
                          {[
                            { label: 'Email', val: doctor?.email || 'N/A', icon: Mail },
                            { label: 'Phone', val: doctor?.phone || 'N/A', icon: Phone },
@@ -835,6 +951,34 @@ const DoctorDashboard: React.FC = () => {
                       </div>
                     )}
                  </div>
+
+                {pendingImagePreview && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 mb-8">
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
+                      Preview (center square crop will be applied)
+                    </p>
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="w-40 h-40 rounded-2xl overflow-hidden border border-slate-200 bg-white">
+                        <img src={pendingImagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleProfileImageUpload(pendingImageFile)}
+                          disabled={uploadingImage}
+                          className="px-5 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all disabled:opacity-60"
+                        >
+                          {uploadingImage ? 'Uploading...' : 'Confirm Upload'}
+                        </button>
+                        <button
+                          onClick={handleCancelPendingImage}
+                          className="px-5 py-3 bg-slate-200 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-300 transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
             {activeTab === 'appointments' && (

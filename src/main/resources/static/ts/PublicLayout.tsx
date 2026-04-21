@@ -37,7 +37,6 @@ const PublicLayout: React.FC = () => {
       { href: '/doctors', label: 'Doctors' },
       { href: '/consultations', label: 'Consultations' },
       { href: '/tools', label: 'Tools' },
-      { href: '/dictionary', label: 'Dictionary' },
       { href: '/about-us', label: 'About' },
     ],
     []

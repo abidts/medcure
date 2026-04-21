@@ -83,6 +83,10 @@ const BMICalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-3xl font-bold text-slate-900">{result.bmi}</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.category}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            BMI is a screening indicator of weight-related health risk. It does not directly measure body fat and may be less accurate for athletes, elderly adults, and during pregnancy.
+            Use this value with waist circumference, activity level, and medical history for a complete assessment.
+          </p>
         </div>
       )}
     </div>
@@ -134,6 +138,10 @@ const BMRCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-sm text-slate-500">Daily calorie needs at rest</p>
           <p className="text-3xl font-bold text-slate-900">{result} kcal/day</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            This is the estimated energy your body needs for essential functions at complete rest (breathing, circulation, temperature control).
+            For weight loss or gain planning, combine this with activity calories and monitor changes over 2-4 weeks.
+          </p>
         </div>
       )}
     </div>
@@ -200,6 +208,10 @@ const CaloriesCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-sm text-slate-500">Daily calorie needs</p>
           <p className="text-3xl font-bold text-slate-900">{result} kcal/day</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            This estimate reflects maintenance calories based on your reported activity level.
+            For fat loss, consider a modest deficit (about 300-500 kcal/day). For muscle gain, use a small surplus and prioritize protein and strength training.
+          </p>
         </div>
       )}
     </div>
@@ -237,6 +249,10 @@ const DueDateCalculator: React.FC = () => {
           <p className="text-sm text-pink-600">Estimated Due Date</p>
           <p className="text-2xl font-bold text-slate-900">{result.dueDate}</p>
           <p className="text-sm text-slate-500 mt-2">Currently ~{result.weeks} weeks pregnant</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            This uses Naegele's rule (LMP + 280 days) and assumes a regular 28-day cycle.
+            Early ultrasound dating can be more precise, especially with irregular cycles or uncertain LMP.
+          </p>
         </div>
       )}
     </div>
@@ -288,6 +304,10 @@ const OvulationCalculator: React.FC = () => {
             <span className="text-sm text-slate-600">Fertile Window:</span>
             <span className="font-semibold">{result.fertileStart} - {result.fertileEnd}</span>
           </div>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            This is an estimate based on average cycle timing. Ovulation can vary month to month.
+            For better accuracy, combine with ovulation kits, cervical mucus tracking, or basal body temperature.
+          </p>
         </div>
       )}
     </div>
@@ -348,6 +368,9 @@ const BloodPressureCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className={`text-xl font-bold ${result.color}`}>{result.category}</p>
           <p className="text-sm text-slate-600 mt-2">{result.advice}</p>
+          <p className="text-xs text-slate-500 mt-3 leading-relaxed">
+            Single readings can be misleading. Measure blood pressure after 5 minutes rest, avoid caffeine/smoking beforehand, and track multiple readings across several days.
+          </p>
         </div>
       )}
     </div>
@@ -407,6 +430,10 @@ const DiabetesRiskCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className={`text-2xl font-bold ${result.color}`}>{result.risk}</p>
           <p className="text-sm text-slate-500">Risk Score: {result.score}/7</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            This score is a screening estimate, not a diagnosis. Confirm risk with fasting glucose, HbA1c, and clinical assessment.
+            Early diet, exercise, sleep, and weight control can significantly reduce future diabetes risk.
+          </p>
         </div>
       )}
     </div>
@@ -446,6 +473,10 @@ const HeartRateCalculator: React.FC = () => {
             <span className="text-sm text-slate-600">Target Zone:</span>
             <span className="font-bold text-red-600">{result.targetMin} - {result.targetMax} bpm</span>
           </div>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Use lower zones for recovery and endurance base; higher zones for interval and performance training.
+            If you have cardiac symptoms or known heart disease, use medically supervised targets.
+          </p>
         </div>
       )}
     </div>
@@ -529,6 +560,10 @@ const BodyFatCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-3xl font-bold text-slate-900">{result.bodyFat}%</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.category}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Body-fat estimates vary by hydration, measurement technique, and body type.
+            Track trends over time rather than one-off values, and combine with strength, waist, and fitness metrics.
+          </p>
         </div>
       )}
     </div>
@@ -585,6 +620,10 @@ const WaistHipCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-3xl font-bold text-slate-900">{result.ratio}</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.risk}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Waist-hip ratio helps assess central fat distribution, which is linked to metabolic and cardiovascular risk.
+            Consider this together with BMI, lipid profile, and blood sugar for better risk interpretation.
+          </p>
         </div>
       )}
     </div>
@@ -637,6 +676,10 @@ const eGFRCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-3xl font-bold text-slate-900">{result.egfr} mL/min</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.stage}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            eGFR is an estimate and should be interpreted with urine albumin, trend over time, age, and comorbidities.
+            Persistent reduction for 3+ months may indicate chronic kidney disease and needs medical follow-up.
+          </p>
         </div>
       )}
     </div>
@@ -682,6 +725,10 @@ const MAPCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-3xl font-bold text-slate-900">{result.map} mmHg</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.status}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            MAP reflects average arterial pressure and organ perfusion. Very low values can compromise blood flow; persistently high values can indicate vascular strain.
+            Interpret with symptoms and clinical context.
+          </p>
         </div>
       )}
     </div>
@@ -755,6 +802,10 @@ const LipidCalculator: React.FC = () => {
             <span className="text-sm text-slate-600">LDL Status:</span>
             <span className="font-semibold">{result.ldlStatus}</span>
           </div>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Cardiovascular risk depends on full profile (LDL, HDL, triglycerides), blood pressure, smoking, diabetes, and family history.
+            Use these ratios as guidance and discuss treatment targets with your clinician.
+          </p>
         </div>
       )}
     </div>
@@ -809,6 +860,10 @@ const AnemiaRiskCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className={`text-2xl font-bold ${result.color}`}>{result.risk}</p>
           <p className="text-sm text-slate-500">Score: {result.score}/10</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            This symptom checklist estimates likelihood only. Confirm anemia with CBC, hemoglobin, ferritin, and iron studies.
+            If symptoms are persistent, seek evaluation even with moderate scores.
+          </p>
         </div>
       )}
     </div>
@@ -859,6 +914,10 @@ const ChildGrowthCalculator: React.FC = () => {
           <p className="text-3xl font-bold text-slate-900">{result.bmi}</p>
           <p className="text-sm text-slate-500">BMI for age percentile</p>
           <p className="text-xs text-slate-400 mt-2">{result.percentile}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Child growth interpretation should use age- and sex-specific percentile charts (WHO/CDC) and growth velocity trends.
+            A pediatric clinician should review serial measurements for accurate assessment.
+          </p>
         </div>
       )}
     </div>
@@ -917,6 +976,10 @@ const VitaminDCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className={`text-2xl font-bold ${result.color}`}>{result.risk}</p>
           <p className="text-sm text-slate-600 mt-2">{result.advice}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Risk can increase with indoor lifestyle, limited sun exposure, malabsorption, or obesity.
+            Confirmation requires a serum 25(OH)D blood test before long-term supplementation plans.
+          </p>
         </div>
       )}
     </div>
@@ -994,6 +1057,10 @@ const FraminghamCalculator: React.FC = () => {
           <p className="text-3xl font-bold text-slate-900">{result.risk}%</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.category}</p>
           <p className="text-xs text-slate-400 mt-2">10-year CVD risk estimate</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Framingham risk is population-based and may under- or over-estimate in some groups.
+            Use with clinician review, especially when considering statins, BP control, and smoking cessation interventions.
+          </p>
         </div>
       )}
     </div>
@@ -1054,6 +1121,10 @@ const HbA1cCalculator: React.FC = () => {
         <div className="p-4 bg-slate-50 rounded-xl text-center">
           <p className="text-3xl font-bold text-slate-900">{result.value} {result.unit}</p>
           <p className={`text-lg font-semibold ${result.color}`}>{result.interpretation}</p>
+          <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+            Conversion between HbA1c and average glucose is approximate and can vary with anemia, kidney disease, and hemoglobin variants.
+            Confirm diagnosis and treatment goals using lab-based testing and clinician guidance.
+          </p>
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, ChevronRight, CalendarDays, Clock3, Stethoscope, ChevronLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 type HeroBanner = {
   id: number;
@@ -16,6 +17,7 @@ type HeroBanner = {
 };
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
   const [specializations, setSpecializations] = useState<any[]>([]);
   const [visibleCount, setVisibleCount] = useState(8);
   const [heroBanners, setHeroBanners] = useState<HeroBanner[]>([]);
@@ -65,6 +67,10 @@ const Home: React.FC = () => {
 
   const handleVideoConsult = () => {
     window.location.href = '/doctors?type=video';
+  };
+
+  const handleSpecializationClick = (spec: any) => {
+    navigate(`/doctors?specialization=${encodeURIComponent(spec.name || '')}`);
   };
 
   const getImagePositionClass = (position?: string) => {
@@ -210,7 +216,16 @@ const Home: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -10 }}
-                className="group page-card p-8 rounded-[32px] transition-all"
+                className="group page-card p-8 rounded-[32px] transition-all cursor-pointer"
+                onClick={() => handleSpecializationClick(spec)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSpecializationClick(spec);
+                  }
+                }}
               >
                 <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
                    <Stethoscope size={26} />

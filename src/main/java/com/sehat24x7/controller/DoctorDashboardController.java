@@ -7,6 +7,7 @@ import com.sehat24x7.model.DoctorEducation;
 import com.sehat24x7.model.DoctorStatus;
 import com.sehat24x7.repository.AppointmentRepository;
 import com.sehat24x7.repository.DoctorRepository;
+import com.sehat24x7.service.CloudinaryService;
 import com.sehat24x7.service.DoctorAvailabilityService;
 import com.sehat24x7.service.DoctorEducationService;
 import com.sehat24x7.service.DoctorServicesService;
@@ -15,6 +16,7 @@ import com.sehat24x7.service.DoctorStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityManager;
 import java.time.DayOfWeek;
@@ -54,6 +56,9 @@ public class DoctorDashboardController {
     @Autowired
     private DoctorServicesService doctorServicesService;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     // Get patient medical reports
     @GetMapping("/patient/{patientId}/reports")
     public ResponseEntity<?> getPatientReports(@PathVariable Long patientId) {
@@ -82,6 +87,7 @@ public class DoctorDashboardController {
             response.put("clinicAddress", doctor.getClinicAddress());
             response.put("consultationFee", doctor.getConsultationFee());
             response.put("specializations", doctor.getSpecializations());
+            response.put("image", doctor.getImage());
             response.put("educations", educationService.getEducationsByDoctorId(doctor.getId()));
             response.put("services", doctorServicesService.getServicesByDoctorId(doctor.getId()));
             return ResponseEntity.ok(response);
@@ -109,6 +115,7 @@ public class DoctorDashboardController {
                 }
             }
             if (profileData.containsKey("specializations")) doctor.setSpecializations((String) profileData.get("specializations"));
+            if (profileData.containsKey("image")) doctor.setImage((String) profileData.get("image"));
 
             doctor = doctorRepository.save(doctor);
 
@@ -140,6 +147,45 @@ public class DoctorDashboardController {
             }
 
             return ResponseEntity.ok(doctor);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/profile/{doctorId}/image")
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long doctorId, @RequestParam("file") MultipartFile file) {
+        try {
+            Doctor doctor = doctorRepository.findById(doctorId)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please select an image"));
+            }
+
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Only image files are allowed"));
+            }
+
+            Map uploadResult = cloudinaryService.upload(file, "doctor-profile");
+            String imageUrl = (String) uploadResult.get("secure_url");
+            doctor.setImage(imageUrl);
+            doctorRepository.save(doctor);
+
+            return ResponseEntity.ok(Map.of("success", true, "image", imageUrl));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/profile/{doctorId}/image")
+    public ResponseEntity<?> removeProfileImage(@PathVariable Long doctorId) {
+        try {
+            Doctor doctor = doctorRepository.findById(doctorId)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            doctor.setImage(null);
+            doctorRepository.save(doctor);
+            return ResponseEntity.ok(Map.of("success", true));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
