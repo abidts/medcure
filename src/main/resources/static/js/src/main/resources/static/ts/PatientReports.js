@@ -1,0 +1,42 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FileText, Upload, Trash2, Eye, Calendar, CheckCircle, X, File, Image as ImageIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
+const PatientReports = () => {
+    const [reports, setReports] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showUpload, setShowUpload] = useState(false);
+    const [uploadLoading, setUploadLoading] = useState(false);
+    const [success, setSuccess] = useState(null);
+    useEffect(() => {
+        fetchReports();
+    }, []);
+    const fetchReports = async () => {
+        setLoading(true);
+        // Simulation
+        setTimeout(() => {
+            setReports([
+                { id: 1, reportName: 'Lab Result - Jan 2024', fileType: 'pdf', uploadDate: '2024-01-15' },
+                { id: 2, reportName: 'Chest X-Ray', fileType: 'image', uploadDate: '2024-02-02' },
+                { id: 3, reportName: 'Prescription - Dr. Mushtaq', fileType: 'pdf', uploadDate: '2024-03-10' },
+            ]);
+            setLoading(false);
+        }, 1000);
+    };
+    const handleUpload = (e) => {
+        e.preventDefault();
+        setUploadLoading(true);
+        // Simulation
+        setTimeout(() => {
+            setUploadLoading(false);
+            setShowUpload(false);
+            setSuccess('Report uploaded successfully!');
+            fetchReports();
+            setTimeout(() => setSuccess(null), 3000);
+        }, 2000);
+    };
+    return (_jsxs("div", { className: "min-h-screen bg-slate-50 flex font-inter", children: [_jsxs("aside", { className: "w-[100px] bg-slate-900 h-screen sticky top-0 flex flex-col items-center py-10 gap-8 hidden md:flex", children: [_jsx(Link, { to: "/", children: _jsx("img", { src: "/images/sehat24x7-logo.png", alt: "T", className: "h-6 brightness-0 invert" }) }), _jsx(Link, { to: `/patient/dashboard?patientId=${localStorage.getItem('patientId')}`, className: "p-4 text-slate-500 hover:text-white transition-colors", children: _jsx(FileText, { size: 28 }) }), _jsx("div", { className: "p-4 bg-blue-600 text-white rounded-3xl shadow-lg shadow-blue-900", children: _jsx(File, { size: 28 }) })] }), _jsxs("main", { className: "flex-1 p-8 lg:p-12", children: [_jsxs("header", { className: "flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12", children: [_jsxs("div", { children: [_jsx("h1", { className: "text-3xl font-bold text-slate-900 font-outfit", children: "Medical Reports" }), _jsx("p", { className: "text-slate-500", children: "Securely store and share your health documents." })] }), _jsxs("button", { onClick: () => setShowUpload(true), className: "px-8 py-4 bg-blue-600 text-white rounded-3xl font-bold flex items-center gap-3 hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all", children: [_jsx(Upload, { size: 20 }), " Upload Report"] })] }), success && (_jsxs(motion.div, { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, className: "mb-8 p-4 bg-green-50 text-green-600 rounded-2xl flex items-center gap-3 font-bold border border-green-100", children: [_jsx(CheckCircle, { size: 20 }), " ", success] })), loading ? (_jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6", children: [1, 2, 3, 4].map(i => _jsx("div", { className: "h-[200px] bg-white rounded-[32px] animate-pulse" }, i)) })) : reports.length > 0 ? (_jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8", children: reports.map((report) => (_jsxs(motion.div, { layout: true, initial: { opacity: 0 }, animate: { opacity: 1 }, className: "bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all group", children: [_jsxs("div", { className: "mb-6 flex justify-between items-start", children: [_jsx("div", { className: `w-14 h-14 rounded-2xl flex items-center justify-center ${report.fileType === 'pdf' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`, children: report.fileType === 'pdf' ? _jsx(FileText, { size: 24 }) : _jsx(ImageIcon, { size: 24 }) }), _jsx("div", { className: "flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity", children: _jsx("button", { className: "p-2 text-slate-400 hover:text-red-500 transition-colors", children: _jsx(Trash2, { size: 16 }) }) })] }), _jsx("h3", { className: "font-bold text-slate-900 mb-2 truncate", children: report.reportName }), _jsxs("div", { className: "flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-8", children: [_jsx(Calendar, { size: 12 }), " ", new Date(report.uploadDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })] }), _jsxs("button", { className: "w-full py-4 bg-slate-50 text-slate-600 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-600 hover:text-white transition-all", children: [_jsx(Eye, { size: 18 }), " View Document"] })] }, report.id))) })) : (_jsxs("div", { className: "py-20 text-center bg-white rounded-[40px] border border-dashed border-slate-200", children: [_jsx("div", { className: "w-20 h-20 bg-slate-50 flex items-center justify-center rounded-3xl mx-auto mb-6 text-slate-300", children: _jsx(FileText, { size: 40 }) }), _jsx("h3", { className: "text-xl font-bold text-slate-900 mb-2", children: "No reports yet" }), _jsx("p", { className: "text-slate-400 max-w-xs mx-auto mb-8", children: "Upload your digital health records to have them accessible anywhere, anytime." }), _jsx("button", { onClick: () => setShowUpload(true), className: "px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold", children: "Upload Your First Report" })] }))] }), _jsx(AnimatePresence, { children: showUpload && (_jsx("div", { className: "fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-md", children: _jsx(motion.div, { initial: { opacity: 0, scale: 0.95 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.95 }, className: "bg-white w-full max-w-lg rounded-[48px] overflow-hidden shadow-2xl", children: _jsxs("div", { className: "p-10", children: [_jsxs("div", { className: "flex justify-between items-center mb-10", children: [_jsx("h2", { className: "text-2xl font-bold text-slate-900 font-outfit", children: "Upload Document" }), _jsx("button", { onClick: () => setShowUpload(false), className: "p-2 hover:bg-slate-100 rounded-full transition-colors", children: _jsx(X, {}) })] }), _jsxs("form", { onSubmit: handleUpload, className: "space-y-8", children: [_jsxs("div", { className: "space-y-2", children: [_jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: "Report Description" }), _jsx("input", { type: "text", placeholder: "e.g. Health Checkup - 2024", className: "w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-blue-300", required: true })] }), _jsxs("div", { className: "space-y-2", children: [_jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: "Select File" }), _jsxs("div", { className: "border-2 border-dashed border-slate-200 rounded-[32px] p-10 text-center hover:border-blue-300 hover:bg-blue-50/30 transition-all cursor-pointer group", children: [_jsx(Upload, { size: 32, className: "mx-auto mb-4 text-slate-300 group-hover:text-blue-600 group-hover:-translate-y-1 transition-all" }), _jsx("p", { className: "text-sm font-bold text-slate-500", children: "Click to upload or drag & drop" }), _jsx("p", { className: "text-[10px] text-slate-400 mt-2 uppercase tracking-widest font-black", children: "PDF, PNG or JPG (Max 5MB)" }), _jsx("input", { type: "file", className: "hidden" })] })] }), _jsx("button", { type: "submit", disabled: uploadLoading, className: "w-full py-5 bg-blue-600 text-white rounded-3xl font-bold shadow-xl shadow-blue-100 flex items-center justify-center gap-3", children: uploadLoading ? 'Uploading...' : 'Start Uploading' })] })] }) }) })) })] }));
+};
+export default PatientReports;
+//# sourceMappingURL=PatientReports.js.map

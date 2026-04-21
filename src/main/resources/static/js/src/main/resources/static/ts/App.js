@@ -1,0 +1,34 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './index.css';
+import { AuthProvider } from './AuthContext';
+import ProtectedRoute from './ProtectedRoute';
+import Home from './Home';
+import Login from './Login';
+import Doctors from './Doctors';
+import DoctorDetail from './DoctorDetail';
+import AboutUs from './AboutUs';
+import DoctorRegister from './DoctorRegister';
+import PatientRegister from './PatientRegister';
+import PatientDashboard from './PatientDashboard';
+import DoctorDashboard from './DoctorDashboard';
+import AppointmentForm from './AppointmentForm';
+import StaffDashboard from './StaffDashboard';
+import PatientReports from './PatientReports';
+import VideoCall from './VideoCall';
+import CreatePrescription from './CreatePrescription';
+import PatientPrescriptions from './PatientPrescriptions';
+import AdminPanel from './AdminPanel';
+import AppointmentSuccess from './AppointmentSuccess';
+import AppointmentList from './AppointmentList';
+import PatientVideoWaiting from './PatientVideoWaiting';
+import ConsultationCategories from './ConsultationCategories';
+import ConsultationBookingForm from './ConsultationBookingForm';
+import PublicLayout from './PublicLayout';
+import Tools from './Tools';
+import MedicalDictionary from './MedicalDictionary';
+const App = () => {
+    return (_jsx(AuthProvider, { children: _jsx(Router, { children: _jsxs(Routes, { children: [_jsxs(Route, { element: _jsx(PublicLayout, {}), children: [_jsx(Route, { path: "/", element: _jsx(Home, {}) }), _jsx(Route, { path: "/login", element: _jsx(Login, {}) }), _jsx(Route, { path: "/doctors", element: _jsx(Doctors, {}) }), _jsx(Route, { path: "/doctors/:id", element: _jsx(DoctorDetail, {}) }), _jsx(Route, { path: "/about-us", element: _jsx(AboutUs, {}) }), _jsx(Route, { path: "/doctor-register", element: _jsx(DoctorRegister, {}) }), _jsx(Route, { path: "/patients/register", element: _jsx(PatientRegister, {}) }), _jsx(Route, { path: "/appointments", element: _jsx(AppointmentList, {}) }), _jsx(Route, { path: "/appointments/book/:doctorId", element: _jsx(AppointmentForm, {}) }), _jsx(Route, { path: "/appointments/success/:id", element: _jsx(AppointmentSuccess, {}) }), _jsx(Route, { path: "/appointments/:id/call", element: _jsx(VideoCall, {}) }), _jsx(Route, { path: "/doctor/video-call", element: _jsx(VideoCall, {}) }), _jsx(Route, { path: "/consultations", element: _jsx(ConsultationCategories, {}) }), _jsx(Route, { path: "/consultation/book/:specializationId", element: _jsx(ConsultationBookingForm, {}) }), _jsx(Route, { path: "/tools", element: _jsx(Tools, {}) }), _jsx(Route, { path: "/dictionary", element: _jsx(MedicalDictionary, {}) })] }), _jsx(Route, { path: "/patient/dashboard", element: _jsx(ProtectedRoute, { requiredRole: "PATIENT", children: _jsx(PatientDashboard, {}) }) }), _jsx(Route, { path: "/patient/reports", element: _jsx(ProtectedRoute, { requiredRole: "PATIENT", children: _jsx(PatientReports, {}) }) }), _jsx(Route, { path: "/patient/prescriptions", element: _jsx(ProtectedRoute, { requiredRole: "PATIENT", children: _jsx(PatientPrescriptions, {}) }) }), _jsx(Route, { path: "/patient/video-call-waiting", element: _jsx(ProtectedRoute, { requiredRole: "PATIENT", children: _jsx(PatientVideoWaiting, {}) }) }), _jsx(Route, { path: "/doctor/dashboard", element: _jsx(ProtectedRoute, { requiredRole: "DOCTOR", children: _jsx(DoctorDashboard, {}) }) }), _jsx(Route, { path: "/doctor/prescription/create", element: _jsx(ProtectedRoute, { requiredRole: "DOCTOR", children: _jsx(CreatePrescription, {}) }) }), _jsx(Route, { path: "/staff/dashboard", element: _jsx(ProtectedRoute, { requiredRole: "STAFF", children: _jsx(StaffDashboard, {}) }) }), _jsx(Route, { path: "/admin-panel", element: _jsx(ProtectedRoute, { requiredRole: "ADMIN", children: _jsx(AdminPanel, {}) }) })] }) }) }));
+};
+export default App;
+//# sourceMappingURL=App.js.map
