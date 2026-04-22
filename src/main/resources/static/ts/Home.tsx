@@ -84,7 +84,7 @@ const Home: React.FC = () => {
   return (
     <div className="page-section home-page">
       <header className="hero-section">
-        <div className="container mx-auto px-10 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
           <div className="hero-banner-shell">
             {activeBanner ? (
               <>
@@ -119,14 +119,14 @@ const Home: React.FC = () => {
                       className="hero-slider-arrow hero-slider-arrow-left"
                       onClick={() => setActiveBannerIndex((prev) => (prev - 1 + heroBanners.length) % heroBanners.length)}
                     >
-                      <ChevronLeft size={18} />
+                      <ChevronLeft size={16} className="sm:size-18" />
                     </button>
                     <button
                       type="button"
                       className="hero-slider-arrow hero-slider-arrow-right"
                       onClick={() => setActiveBannerIndex((prev) => (prev + 1) % heroBanners.length)}
                     >
-                      <ChevronRight size={18} />
+                      <ChevronRight size={16} className="sm:size-18" />
                     </button>
                     <div className="hero-slider-dots">
                       {heroBanners.map((banner, idx) => (
@@ -153,9 +153,9 @@ const Home: React.FC = () => {
       </header>
 
       {/* Appointment Type Cards */}
-      <section className="py-12 bg-slate-50">
-        <div className="container mx-auto px-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="py-8 sm:py-12 bg-slate-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {/* Physical Appointment Card */}
             <motion.div
               onClick={handlePhysicalAppointment}
@@ -163,13 +163,13 @@ const Home: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               whileHover={{ y: -5 }}
-              className="page-card p-8 rounded-[24px] cursor-pointer shadow-lg hover:shadow-xl transition-all"
+              className="page-card p-6 sm:p-8 rounded-[16px] sm:rounded-[24px] cursor-pointer shadow-lg hover:shadow-xl transition-all"
             >
-              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-                <CalendarDays size={24} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                <CalendarDays size={18} className="sm:size-24" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Physical Appointment</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">Book an in-clinic appointment with our trusted doctors</p>
+              <h3 className="text-lg sm:text-2xl font-bold text-slate-900 mb-2">Physical Appointment</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">Book an in-clinic appointment with our trusted doctors</p>
             </motion.div>
 
             {/* Video Consult Card */}
@@ -179,44 +179,44 @@ const Home: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               whileHover={{ y: -5 }}
-              className="page-card p-8 rounded-[24px] cursor-pointer shadow-lg hover:shadow-xl transition-all"
+              className="page-card p-6 sm:p-8 rounded-[16px] sm:rounded-[24px] cursor-pointer shadow-lg hover:shadow-xl transition-all"
             >
-              <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-4">
-                <Clock3 size={24} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-4">
+                <Clock3 size={18} className="sm:size-24" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Video Consult</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">Connect with doctors instantly via secure video consultation</p>
+              <h3 className="text-lg sm:text-2xl font-bold text-slate-900 mb-2">Video Consult</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">Connect with doctors instantly via secure video consultation</p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="container mx-auto px-10">
+      <section className="py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-10">
           <div className="section-heading">
             <div>
               <p className="section-kicker">Specialities</p>
-              <h2 className="text-5xl font-black font-outfit mb-2 text-slate-950">Browse Specializations</h2>
-              <p className="text-lg font-medium text-slate-500">Find the right care across our medical network.</p>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-outfit mb-2 text-slate-950">Browse Specializations</h2>
+              <p className="text-sm sm:text-lg font-medium text-slate-500">Find the right care across our medical network.</p>
             </div>
             <a href="/doctors" className="section-link">
-              Explore All <Search size={16} />
+              <span className="hidden sm:inline">Explore All</span> <Search size={14} className="sm:size-16" />
             </a>
           </div>
 
           <div className="space-y-4">
-              <div className="text-center text-sm text-slate-500">
+              <div className="text-center text-xs sm:text-sm text-slate-500">
                 Showing {Math.min(visibleCount, specializations.length)} of {specializations.length} specializations
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 {specializations.length > 0 ? specializations.slice(0, visibleCount).map((spec, i) => (
               <motion.div 
                 key={spec.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="group page-card p-8 rounded-[32px] transition-all cursor-pointer"
+                whileHover={{ y: -5 }}
+                className="group page-card p-4 sm:p-6 lg:p-8 rounded-[16px] sm:rounded-[24px] lg:rounded-[32px] transition-all cursor-pointer"
                 onClick={() => handleSpecializationClick(spec)}
                 role="button"
                 tabIndex={0}
@@ -227,34 +227,35 @@ const Home: React.FC = () => {
                   }
                 }}
               >
-                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                   <Stethoscope size={26} />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 text-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                   <Stethoscope size={20} className="sm:size-26" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">{spec.name}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-4">{spec.description || 'Consult our verified experts for specialised care.'}</p>
-                <div className="flex items-center gap-2 text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                   View Doctors <ChevronRight size={12} />
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">{spec.name}</h3>
+                <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4">{spec.description || 'Consult our verified experts for specialised care.'}</p>
+                <div className="flex items-center gap-2 text-[8px] sm:text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                   <span className="hidden sm:inline">View Doctors</span>
+                   <span className="sm:hidden">View</span> <ChevronRight size={10} className="sm:size-12" />
                 </div>
               </motion.div>
             )) : (
                [1,2,3,4].map(i => (
-                 <div key={i} className="page-card p-8 rounded-[32px] animate-pulse" style={{height:'220px'}}></div>
+                 <div key={i} className="page-card p-4 sm:p-6 lg:p-8 rounded-[16px] sm:rounded-[24px] lg:rounded-[32px] animate-pulse h-[180px] sm:h-[220px]"></div>
                ))
             )}
-          </div>
           </div>
           
           {/* View More Button */}
           {specializations.length > visibleCount && (
-            <div className="text-center mt-8">
+            <div className="text-center mt-6 sm:mt-8">
               <motion.button
                 onClick={handleViewMore}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center gap-2 mx-auto"
+                className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 text-white rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center gap-2 mx-auto"
               >
-                View More Specializations
-                <ChevronRight size={16} />
+                <span className="hidden sm:inline">View More Specializations</span>
+                <span className="sm:hidden">View More</span>
+                <ChevronRight size={14} className="sm:size-16" />
               </motion.button>
             </div>
           )}

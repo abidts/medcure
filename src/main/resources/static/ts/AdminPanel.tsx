@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Database, 
   Shield, Activity, Calendar, Info, 
   LogOut, Star, CheckCircle, XCircle, 
-  Bell, HelpCircle, ChevronRight, Download, RefreshCw, ImageIcon
+  Bell, HelpCircle, ChevronRight, Download, RefreshCw, ImageIcon, Menu, X
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -15,6 +15,7 @@ const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -29,6 +30,7 @@ const AdminPanel: React.FC = () => {
     allowDoctorRegistration: 'true'
   });
   const [editingBannerId, setEditingBannerId] = useState<number | null>(null);
+  const [quickEditModal, setQuickEditModal] = useState<{ isOpen: boolean; row: any; value: string }>({ isOpen: false, row: null, value: '' });
   const [bannerForm, setBannerForm] = useState({
     title: '',
     subtitle: '',
@@ -167,24 +169,33 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const handleQuickEdit = async (row: any) => {
-    const newName = window.prompt('Enter updated name/title', row.name || row.title || '');
-    if (newName === null || !newName.trim()) return;
+  const handleQuickEdit = (row: any) => {
+    setQuickEditModal({
+      isOpen: true,
+      row,
+      value: row.name || row.title || row.text || ''
+    });
+  };
+
+  const saveQuickEdit = async () => {
+    const { row, value } = quickEditModal;
+    if (!value.trim()) return;
+    
     try {
       let endpoint = '';
       let payload: any = {};
       if (activeTab === 'doctors') {
         endpoint = `/api/admin/doctors/${row.id}`;
-        payload = { ...row, name: newName };
+        payload = { ...row, name: value };
       } else if (activeTab === 'admins') {
         endpoint = `/api/admin/admins/${row.id}`;
-        payload = { ...row, user: { ...row.user, name: newName } };
+        payload = { ...row, user: { ...row.user, name: value } };
       } else if (activeTab === 'users') {
         endpoint = `/api/admin/users/${row.id}`;
-        payload = { ...row, name: newName };
+        payload = { ...row, name: value };
       } else if (activeTab === 'announcements') {
         endpoint = `/api/announcements/${row.id}`;
-        payload = { ...row, text: newName };
+        payload = { ...row, text: value };
       } else {
         return;
       }
@@ -195,9 +206,14 @@ const AdminPanel: React.FC = () => {
       });
       if (!response.ok) throw new Error('Update failed');
       await loadTabData(activeTab);
+      setQuickEditModal({ isOpen: false, row: null, value: '' });
     } catch (err) {
       setError('Failed to update record');
     }
+  };
+
+  const cancelQuickEdit = () => {
+    setQuickEditModal({ isOpen: false, row: null, value: '' });
   };
 
   const menuItems = [
@@ -274,28 +290,58 @@ const AdminPanel: React.FC = () => {
 
   return (
     <div className="admin-panel flex min-h-screen bg-[#F8FAFC] font-inter">
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="w-80 bg-slate-950 text-white flex flex-col fixed inset-y-0 left-0 z-50 overflow-hidden shadow-2xl">
-         <div className="p-10">
-            <div className="flex items-center gap-4 mb-12">
-               <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center">
-                  <Shield size={24} className="text-white" />
+      <aside className={`
+        fixed top-0 left-0 z-50 h-full bg-slate-950 text-white flex flex-col shadow-2xl transform transition-transform duration-300 ease-in-out
+        lg:translate-x-0 lg:static lg:z-auto
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        w-64 sm:w-72 lg:w-80
+      `}>
+         <div className="p-4 sm:p-6 lg:p-10">
+            <div className="flex items-center justify-between mb-8 lg:mb-12">
+               <div className="flex items-center gap-3 lg:gap-4">
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-600 rounded-xl lg:rounded-2xl flex items-center justify-center">
+                     <Shield size={20} className="lg:size-24 text-white" />
+                  </div>
+                  <div>
+                     <h1 className="text-lg lg:text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Sehat24X7 Admin</h1>
+                     <p className="text-[8px] lg:text-[10px] text-blue-500 font-black uppercase tracking-widest hidden sm:block">Enterprise v4.0</p>
+                  </div>
                </div>
-               <div>
-                  <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Sehat24X7 Admin</h1>
-                  <p className="text-[10px] text-blue-500 font-black uppercase tracking-widest">Enterprise v4.0</p>
-               </div>
+               {/* Mobile close button */}
+               <button 
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
+               >
+                  <X size={20} className="text-white" />
+               </button>
             </div>
 
-            <nav className="space-y-2">
+            <nav className="space-y-1 lg:space-y-2">
                {menuItems.map((item) => (
                   <button 
                     key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${activeTab === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setSidebarOpen(false); // Close sidebar on mobile after selection
+                    }}
+                    className={`w-full flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3 lg:py-4 rounded-xl lg:rounded-2xl transition-all duration-300 group ${activeTab === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                   >
-                     <item.icon size={20} className={activeTab === item.id ? 'text-white' : 'group-hover:scale-110 transition-transform'} />
-                     <span className="font-bold text-sm tracking-wide">{item.label}</span>
+                     <item.icon size={18} className="lg:size-20" />
+                     <span className="font-bold text-xs lg:text-sm tracking-wide">{item.label}</span>
                      {activeTab === item.id && (
                        <motion.div layoutId="activeInd" className="ml-auto w-1.5 h-1.5 bg-white rounded-full" />
                      )}
@@ -304,42 +350,60 @@ const AdminPanel: React.FC = () => {
             </nav>
          </div>
 
-         <div className="mt-auto p-10 space-y-4">
-            <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Service Status</p>
-                <div className="flex items-center gap-3">
+         <div className="mt-auto p-4 sm:p-6 lg:p-10 space-y-3 lg:space-y-4">
+            <div className="p-4 lg:p-6 bg-white/5 rounded-2xl lg:rounded-3xl border border-white/5">
+                <p className="text-[8px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Service Status</p>
+                <div className="flex items-center gap-2 lg:gap-3">
                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                   <span className="text-xs font-bold text-slate-300">API Gateway Online</span>
+                   <span className="text-xs lg:text-xs font-bold text-slate-300 hidden sm:block">API Gateway Online</span>
+                   <span className="text-xs lg:text-xs font-bold text-slate-300 sm:hidden">Online</span>
                 </div>
             </div>
             <button 
                onClick={logout}
-               className="w-full flex items-center gap-4 px-6 py-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-2xl transition-all"
+               className="w-full flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3 lg:py-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl lg:rounded-2xl transition-all"
              >
-               <LogOut size={20} />
-               <span className="font-bold text-sm">Sign Out</span>
+               <LogOut size={18} className="lg:size-20" />
+               <span className="font-bold text-xs lg:text-sm">Sign Out</span>
             </button>
          </div>
       </aside>
 
       {/* Main Content */}
-      <main className="ml-80 flex-1 p-12">
+      <main className="flex-1 lg:ml-80 min-h-screen">
          {/* Navigation Bar */}
-         <header className="flex justify-between items-center mb-12">
-            <div>
-               <h2 className="text-3xl font-bold text-slate-900 font-outfit capitalize">{activeTab.replace('-', ' ')}</h2>
-               <p className="text-slate-500">Welcome back, Super Admin. Everything is looking good.</p>
+         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-6 lg:p-12 mb-6 sm:mb-12">
+            <div className="flex items-center gap-3">
+               {/* Mobile menu button */}
+               <button 
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden p-2 bg-white rounded-xl border border-slate-100 shadow-sm hover:bg-slate-50 transition-colors"
+               >
+                  <Menu size={20} className="text-slate-600" />
+               </button>
+               <div>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 font-outfit capitalize">{activeTab.replace('-', ' ')}</h2>
+                  <p className="text-sm sm:text-base text-slate-500 hidden sm:block">Welcome back, Super Admin. Everything is looking good.</p>
+                  <p className="text-xs text-slate-500 sm:hidden">Welcome back, Super Admin</p>
+               </div>
             </div>
-            <div className="flex items-center gap-4">
-               <div className="relative group">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+               <div className="relative group flex-1 sm:flex-initial">
                   <input 
                     type="text" 
                     placeholder="Global search..." 
-                    className="px-6 py-3 bg-white border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-blue-100/50 w-72 shadow-sm transition-all"
+                    className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-white border border-slate-100 rounded-xl sm:rounded-2xl text-sm focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-blue-100/50 w-full sm:w-48 lg:w-72 shadow-sm transition-all"
                   />
                </div>
-               <button className="p-3 bg-white text-slate-400 rounded-2xl border border-slate-100 hover:text-blue-600 transition-all shadow-sm">
-                  <RefreshCw size={20} onClick={fetchStats} />
+               <button className="p-2 sm:p-3 bg-white text-slate-400 rounded-xl sm:rounded-2xl border border-slate-100 hover:text-blue-600 transition-all shadow-sm">
+                  <RefreshCw size={16} className="sm:size-20" onClick={fetchStats} />
+               </button>
+               <button 
+                  onClick={logout}
+                  className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl border border-red-100 hover:bg-red-100 transition-all font-bold text-xs sm:text-sm"
+               >
+                  <LogOut size={14} className="sm:size-16" />
+                  <span className="hidden sm:block">Logout</span>
                </button>
             </div>
          </header>
@@ -352,51 +416,51 @@ const AdminPanel: React.FC = () => {
 
          {/* Stats Cards Dashboard Header */}
          {activeTab === 'dashboard' && stats && (
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-               <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-blue-600">
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <UserCheck size={24} />
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 px-4 sm:px-0">
+               <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-[20px] sm:rounded-[30px] lg:rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-blue-600">
+                  <div className="flex justify-between items-start mb-4 sm:mb-6">
+                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <UserCheck size={18} className="sm:size-24" />
                      </div>
-                     <span className="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">+12%</span>
+                     <span className="text-[10px] sm:text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">+12%</span>
                   </div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-1">{stats.totalDoctors}</h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Doctors</p>
-                  <div className="absolute -right-4 -bottom-4 text-blue-50 group-hover:rotate-12 transition-transform duration-500"><UserCheck size={80} /></div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1">{stats.totalDoctors}</h3>
+                  <p className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Doctors</p>
+                  <div className="absolute -right-2 -bottom-2 sm:-right-4 sm:-bottom-4 text-blue-50 group-hover:rotate-12 transition-transform duration-500 hidden sm:block"><UserCheck size={40} className="sm:size-80" /></div>
                </div>
 
-               <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-emerald-600">
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Users size={24} />
+               <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-[20px] sm:rounded-[30px] lg:rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-emerald-600">
+                  <div className="flex justify-between items-start mb-4 sm:mb-6">
+                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 text-emerald-600 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Users size={18} className="sm:size-24" />
                      </div>
-                     <span className="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">+5%</span>
+                     <span className="text-[10px] sm:text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">+5%</span>
                   </div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-1">{stats.totalUsers}</h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Patients</p>
-                  <div className="absolute -right-4 -bottom-4 text-emerald-50 group-hover:rotate-12 transition-transform duration-500"><Users size={80} /></div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1">{stats.totalUsers}</h3>
+                  <p className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Patients</p>
+                  <div className="absolute -right-2 -bottom-2 sm:-right-4 sm:-bottom-4 text-emerald-50 group-hover:rotate-12 transition-transform duration-500 hidden sm:block"><Users size={40} className="sm:size-80" /></div>
                </div>
 
-               <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-purple-600">
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Shield size={24} />
+               <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-[20px] sm:rounded-[30px] lg:rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-purple-600">
+                  <div className="flex justify-between items-start mb-4 sm:mb-6">
+                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-50 text-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Shield size={18} className="sm:size-24" />
                      </div>
                   </div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-1">{stats.totalAdmins}</h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Staff Admins</p>
-                  <div className="absolute -right-4 -bottom-4 text-purple-50 group-hover:rotate-12 transition-transform duration-500"><Shield size={80} /></div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1">{stats.totalAdmins}</h3>
+                  <p className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Staff Admins</p>
+                  <div className="absolute -right-2 -bottom-2 sm:-right-4 sm:-bottom-4 text-purple-50 group-hover:rotate-12 transition-transform duration-500 hidden sm:block"><Shield size={40} className="sm:size-80" /></div>
                </div>
 
-               <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-amber-600">
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Activity size={24} />
+               <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-[20px] sm:rounded-[30px] lg:rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all border-b-4 border-b-amber-600">
+                  <div className="flex justify-between items-start mb-4 sm:mb-6">
+                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-50 text-amber-600 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Activity size={18} className="sm:size-24" />
                      </div>
                   </div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-1">{stats.activeDoctors}</h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Doctors Online</p>
-                  <div className="absolute -right-4 -bottom-4 text-amber-50 group-hover:rotate-12 transition-transform duration-500"><Activity size={80} /></div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1">{stats.activeDoctors}</h3>
+                  <p className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Doctors Online</p>
+                  <div className="absolute -right-2 -bottom-2 sm:-right-4 sm:-bottom-4 text-amber-50 group-hover:rotate-12 transition-transform duration-500 hidden sm:block"><Activity size={40} className="sm:size-80" /></div>
                </div>
             </section>
          )}
@@ -464,76 +528,146 @@ const AdminPanel: React.FC = () => {
                </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="px-4 sm:px-0">
                {loading ? (
-                 <div className="p-24 flex flex-col items-center justify-center text-slate-400">
+                 <div className="p-12 sm:p-24 flex flex-col items-center justify-center text-slate-400">
                     <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="mb-4">
-                       <RefreshCw size={40} />
+                       <RefreshCw size={30} className="sm:size-40" />
                     </motion.div>
-                    <p className="text-sm font-bold tracking-widest uppercase">Fetching Records...</p>
+                    <p className="text-xs sm:text-sm font-bold tracking-widest uppercase">Fetching Records...</p>
                  </div>
                ) : data.length === 0 ? (
-                 <div className="p-24 flex flex-col items-center justify-center text-slate-400">
-                    <p className="text-sm font-bold tracking-widest uppercase">No records found</p>
+                 <div className="p-12 sm:p-24 flex flex-col items-center justify-center text-slate-400">
+                    <p className="text-xs sm:text-sm font-bold tracking-widest uppercase">No records found</p>
                  </div>
                ) : (
-                  <table className="w-full text-left">
-                     <thead>
-                        <tr className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
-                           <th className="px-10 py-6">ID</th>
-                           <th className="px-10 py-6">Name / Detail</th>
-                           <th className="px-10 py-6">Status / Contact</th>
-                           <th className="px-10 py-6">Metadata</th>
-                           <th className="px-10 py-6 text-right">Actions</th>
-                        </tr>
-                     </thead>
-                     <tbody className="divide-y divide-slate-50">
+                  <>
+                     {/* Desktop Table View */}
+                     <div className="hidden lg:block overflow-x-auto">
+                        <table className="w-full text-left">
+                           <thead>
+                              <tr className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
+                                 <th className="px-6 lg:px-10 py-6">ID</th>
+                                 <th className="px-6 lg:px-10 py-6">Name / Detail</th>
+                                 <th className="px-6 lg:px-10 py-6">Status / Contact</th>
+                                 <th className="px-6 lg:px-10 py-6">Metadata</th>
+                                 <th className="px-6 lg:px-10 py-6 text-right">Actions</th>
+                              </tr>
+                           </thead>
+                           <tbody className="divide-y divide-slate-50">
+                              {data.map((row) => (
+                                 <tr key={row.id} className="hover:bg-slate-50/50 transition-colors group">
+                                    <td className="px-6 lg:px-10 py-6 text-slate-400 text-xs font-bold">#{row.id}</td>
+                                    <td className="px-6 lg:px-10 py-6">
+                                       <div className="flex items-center gap-4">
+                                          <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm">
+                                             {row.name ? row.name.charAt(0) : 'U'}
+                                          </div>
+                                          <div>
+                                             <p className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{row.name || row.title || row.user?.name || row.text || 'N/A'}</p>
+                                             <p className="text-xs text-slate-400">{row.email || row.user?.email || row.type || 'No additional data'}</p>
+                                          </div>
+                                       </div>
+                                    </td>
+                                    <td className="px-6 lg:px-10 py-6">
+                                       {row.available !== undefined || row.isActive !== undefined ? (
+                                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${row.available || row.isActive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                             {row.available || row.isActive ? 'Active' : 'Offline'}
+                                          </span>
+                                       ) : (
+                                          <p className="text-xs text-slate-600 font-medium">{row.phone || 'Registry record'}</p>
+                                       )}
+                                    </td>
+                                    <td className="px-6 lg:px-10 py-6">
+                                       <p className="text-xs font-bold text-slate-400">{row.specialization?.name || row.role || 'Enterprise'}</p>
+                                       <p className="text-[10px] text-slate-300 font-bold tracking-tighter uppercase">{row.joiningDate || 'MEMBER SINCE 2024'}</p>
+                                    </td>
+                                    <td className="px-6 lg:px-10 py-6">
+                                       <div className="flex justify-end gap-2 opacity-100">
+                                          <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" onClick={() => handleQuickEdit(row)} disabled={actionLoadingId !== null}>
+                                             <Edit3 size={16} />
+                                          </button>
+                                          {(activeTab === 'doctors' || activeTab === 'users' || activeTab === 'announcements') && (
+                                            <button className="p-2.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all" onClick={() => handleToggleStatus(row)} disabled={actionLoadingId !== null}>
+                                              <Activity size={16} />
+                                            </button>
+                                          )}
+                                          <button className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" onClick={() => handleDeleteRow(row)} disabled={actionLoadingId !== null}>
+                                             <Trash2 size={16} />
+                                          </button>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              ))}
+                           </tbody>
+                        </table>
+                     </div>
+
+                     {/* Mobile Card View */}
+                     <div className="lg:hidden space-y-4">
                         {data.map((row) => (
-                           <tr key={row.id} className="hover:bg-slate-50/50 transition-colors group">
-                              <td className="px-10 py-6 text-slate-400 text-xs font-bold">#{row.id}</td>
-                              <td className="px-10 py-6">
-                                 <div className="flex items-center gap-4">
+                           <div key={row.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all">
+                              <div className="flex items-start justify-between mb-3">
+                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm">
                                        {row.name ? row.name.charAt(0) : 'U'}
                                     </div>
                                     <div>
-                                       <p className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{row.name || row.title || row.user?.name || row.text || 'N/A'}</p>
-                                       <p className="text-xs text-slate-400">{row.email || row.user?.email || row.type || 'No additional data'}</p>
+                                       <p className="font-bold text-slate-900 text-sm">{row.name || row.title || row.user?.name || row.text || 'N/A'}</p>
+                                       <p className="text-xs text-slate-400">#{row.id}</p>
                                     </div>
                                  </div>
-                              </td>
-                              <td className="px-10 py-6">
                                  {row.available !== undefined || row.isActive !== undefined ? (
-                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${row.available || row.isActive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${row.available || row.isActive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                                        {row.available || row.isActive ? 'Active' : 'Offline'}
                                     </span>
-                                 ) : (
-                                    <p className="text-xs text-slate-600 font-medium">{row.phone || 'Registry record'}</p>
+                                 ) : null}
+                              </div>
+                              
+                              <div className="space-y-2 mb-4">
+                                 {row.email || row.user?.email ? (
+                                    <div className="flex items-center gap-2">
+                                       <span className="text-[10px] font-black text-slate-400 uppercase">Email:</span>
+                                       <span className="text-xs text-slate-600">{row.email || row.user?.email}</span>
+                                    </div>
+                                 ) : null}
+                                 {row.phone ? (
+                                    <div className="flex items-center gap-2">
+                                       <span className="text-[10px] font-black text-slate-400 uppercase">Phone:</span>
+                                       <span className="text-xs text-slate-600">{row.phone}</span>
+                                    </div>
+                                 ) : null}
+                                 {row.specialization?.name ? (
+                                    <div className="flex items-center gap-2">
+                                       <span className="text-[10px] font-black text-slate-400 uppercase">Role:</span>
+                                       <span className="text-xs text-slate-600">{row.specialization.name}</span>
+                                    </div>
+                                 ) : null}
+                                 {row.role ? (
+                                    <div className="flex items-center gap-2">
+                                       <span className="text-[10px] font-black text-slate-400 uppercase">Role:</span>
+                                       <span className="text-xs text-slate-600">{row.role}</span>
+                                    </div>
+                                 ) : null}
+                              </div>
+                              
+                              <div className="flex justify-end gap-2">
+                                 <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" onClick={() => handleQuickEdit(row)} disabled={actionLoadingId !== null}>
+                                    <Edit3 size={14} />
+                                 </button>
+                                 {(activeTab === 'doctors' || activeTab === 'users' || activeTab === 'announcements') && (
+                                   <button className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" onClick={() => handleToggleStatus(row)} disabled={actionLoadingId !== null}>
+                                     <Activity size={14} />
+                                   </button>
                                  )}
-                              </td>
-                              <td className="px-10 py-6">
-                                 <p className="text-xs font-bold text-slate-400">{row.specialization?.name || row.role || 'Enterprise'}</p>
-                                 <p className="text-[10px] text-slate-300 font-bold tracking-tighter uppercase">{row.joiningDate || 'MEMBER SINCE 2024'}</p>
-                              </td>
-                              <td className="px-10 py-6">
-                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" onClick={() => handleQuickEdit(row)} disabled={actionLoadingId !== null}>
-                                       <Edit3 size={16} />
-                                    </button>
-                                    {(activeTab === 'doctors' || activeTab === 'users' || activeTab === 'announcements') && (
-                                      <button className="p-2.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all" onClick={() => handleToggleStatus(row)} disabled={actionLoadingId !== null}>
-                                        <Activity size={16} />
-                                      </button>
-                                    )}
-                                    <button className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" onClick={() => handleDeleteRow(row)} disabled={actionLoadingId !== null}>
-                                       <Trash2 size={16} />
-                                    </button>
-                                 </div>
-                              </td>
-                           </tr>
+                                 <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" onClick={() => handleDeleteRow(row)} disabled={actionLoadingId !== null}>
+                                    <Trash2 size={14} />
+                                 </button>
+                              </div>
+                           </div>
                         ))}
-                     </tbody>
-                  </table>
+                     </div>
+                  </>
                )}
             </div>
          </section>
@@ -612,6 +746,51 @@ const AdminPanel: React.FC = () => {
             </div>
          </section>
       </main>
+
+      {/* Quick Edit Modal */}
+      <AnimatePresence>
+        {quickEditModal.isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={cancelQuickEdit}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Edit {activeTab === 'announcements' ? 'Announcement' : 'Name'}</h3>
+              <input
+                type="text"
+                value={quickEditModal.value}
+                onChange={(e) => setQuickEditModal(prev => ({ ...prev, value: e.target.value }))}
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 mb-6"
+                placeholder={`Enter updated ${activeTab === 'announcements' ? 'announcement text' : 'name/title'}`}
+                autoFocus
+              />
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={cancelQuickEdit}
+                  className="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveQuickEdit}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
