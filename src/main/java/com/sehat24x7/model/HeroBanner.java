@@ -27,6 +27,15 @@ public class HeroBanner {
     @Column(length = 600)
     private String description;
 
+    @Column(nullable = false, length = 20)
+    private String titleColor = "#FFFFFF";
+
+    @Column(nullable = false, length = 20)
+    private String subtitleColor = "#E2E8F0";
+
+    @Column(nullable = false, length = 20)
+    private String descriptionColor = "#F8FAFC";
+
     @Column(nullable = false, length = 1000)
     private String imageUrl;
 

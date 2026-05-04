@@ -9,9 +9,15 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class HeroBannerServiceImpl implements HeroBannerService {
+
+    private static final String DEFAULT_TITLE_COLOR = "#FFFFFF";
+    private static final String DEFAULT_SUBTITLE_COLOR = "#E2E8F0";
+    private static final String DEFAULT_DESCRIPTION_COLOR = "#F8FAFC";
+    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("^#(?:[0-9a-fA-F]{3}){1,2}$");
 
     @Autowired
     private HeroBannerRepository heroBannerRepository;
@@ -42,6 +48,9 @@ public class HeroBannerServiceImpl implements HeroBannerService {
         if (banner.getImagePosition() == null) {
             banner.setImagePosition(HeroBanner.ImagePosition.CENTER);
         }
+        banner.setTitleColor(normalizeColor(banner.getTitleColor(), DEFAULT_TITLE_COLOR));
+        banner.setSubtitleColor(normalizeColor(banner.getSubtitleColor(), DEFAULT_SUBTITLE_COLOR));
+        banner.setDescriptionColor(normalizeColor(banner.getDescriptionColor(), DEFAULT_DESCRIPTION_COLOR));
         return heroBannerRepository.save(banner);
     }
 
@@ -56,6 +65,9 @@ public class HeroBannerServiceImpl implements HeroBannerService {
         if (bannerDetails.getTitle() != null) banner.setTitle(bannerDetails.getTitle());
         if (bannerDetails.getSubtitle() != null) banner.setSubtitle(bannerDetails.getSubtitle());
         if (bannerDetails.getDescription() != null) banner.setDescription(bannerDetails.getDescription());
+        if (bannerDetails.getTitleColor() != null) banner.setTitleColor(normalizeColor(bannerDetails.getTitleColor(), DEFAULT_TITLE_COLOR));
+        if (bannerDetails.getSubtitleColor() != null) banner.setSubtitleColor(normalizeColor(bannerDetails.getSubtitleColor(), DEFAULT_SUBTITLE_COLOR));
+        if (bannerDetails.getDescriptionColor() != null) banner.setDescriptionColor(normalizeColor(bannerDetails.getDescriptionColor(), DEFAULT_DESCRIPTION_COLOR));
         if (bannerDetails.getImageUrl() != null) banner.setImageUrl(bannerDetails.getImageUrl());
         if (bannerDetails.getImagePosition() != null) banner.setImagePosition(bannerDetails.getImagePosition());
         if (bannerDetails.getPrimaryLinkText() != null) banner.setPrimaryLinkText(bannerDetails.getPrimaryLinkText());
@@ -89,5 +101,16 @@ public class HeroBannerServiceImpl implements HeroBannerService {
             banner.setIsActive(false);
             heroBannerRepository.save(banner);
         });
+    }
+
+    private String normalizeColor(String color, String fallback) {
+        if (color == null || color.isBlank()) {
+            return fallback;
+        }
+        String trimmed = color.trim();
+        if (!HEX_COLOR_PATTERN.matcher(trimmed).matches()) {
+            return fallback;
+        }
+        return trimmed.toUpperCase();
     }
 }

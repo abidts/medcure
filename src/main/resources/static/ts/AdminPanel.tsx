@@ -35,6 +35,9 @@ const AdminPanel: React.FC = () => {
     title: '',
     subtitle: '',
     description: '',
+    titleColor: '#FFFFFF',
+    subtitleColor: '#E2E8F0',
+    descriptionColor: '#F8FAFC',
     imageUrl: '',
     imagePosition: 'CENTER',
     primaryLinkText: '',
@@ -231,6 +234,9 @@ const AdminPanel: React.FC = () => {
       title: '',
       subtitle: '',
       description: '',
+      titleColor: '#FFFFFF',
+      subtitleColor: '#E2E8F0',
+      descriptionColor: '#F8FAFC',
       imageUrl: '',
       imagePosition: 'CENTER',
       primaryLinkText: '',
@@ -249,6 +255,9 @@ const AdminPanel: React.FC = () => {
       title: banner.title || '',
       subtitle: banner.subtitle || '',
       description: banner.description || '',
+      titleColor: banner.titleColor || '#FFFFFF',
+      subtitleColor: banner.subtitleColor || '#E2E8F0',
+      descriptionColor: banner.descriptionColor || '#F8FAFC',
       imageUrl: banner.imageUrl || '',
       imagePosition: banner.imagePosition || 'CENTER',
       primaryLinkText: banner.primaryLinkText || '',
@@ -475,6 +484,35 @@ const AdminPanel: React.FC = () => {
                 <input className="px-4 py-3 border border-slate-200 rounded-xl" placeholder="Subtitle" value={bannerForm.subtitle} onChange={(e) => setBannerForm({ ...bannerForm, subtitle: e.target.value })} />
                 <input className="px-4 py-3 border border-slate-200 rounded-xl md:col-span-2" placeholder="Image URL" value={bannerForm.imageUrl} onChange={(e) => setBannerForm({ ...bannerForm, imageUrl: e.target.value })} />
                 <textarea className="px-4 py-3 border border-slate-200 rounded-xl md:col-span-2 resize-none h-[100px]" placeholder="Description text over banner" value={bannerForm.description} onChange={(e) => setBannerForm({ ...bannerForm, description: e.target.value })} />
+                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <label className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-xl bg-white">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.14em]">Title Color</span>
+                    <input
+                      type="color"
+                      value={bannerForm.titleColor}
+                      onChange={(e) => setBannerForm({ ...bannerForm, titleColor: e.target.value })}
+                      className="w-10 h-10 p-0 border-0 rounded-xl"
+                    />
+                  </label>
+                  <label className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-xl bg-white">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.14em]">Subtitle Color</span>
+                    <input
+                      type="color"
+                      value={bannerForm.subtitleColor}
+                      onChange={(e) => setBannerForm({ ...bannerForm, subtitleColor: e.target.value })}
+                      className="w-10 h-10 p-0 border-0 rounded-xl"
+                    />
+                  </label>
+                  <label className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-xl bg-white">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.14em]">Description Color</span>
+                    <input
+                      type="color"
+                      value={bannerForm.descriptionColor}
+                      onChange={(e) => setBannerForm({ ...bannerForm, descriptionColor: e.target.value })}
+                      className="w-10 h-10 p-0 border-0 rounded-xl"
+                    />
+                  </label>
+                </div>
                 <select className="px-4 py-3 border border-slate-200 rounded-xl" value={bannerForm.imagePosition} onChange={(e) => setBannerForm({ ...bannerForm, imagePosition: e.target.value })}>
                   <option value="LEFT">Image Left</option>
                   <option value="CENTER">Image Center</option>
@@ -496,8 +534,11 @@ const AdminPanel: React.FC = () => {
                 <div key={banner.id} className="border border-slate-200 rounded-2xl overflow-hidden">
                   <img src={banner.imageUrl} alt={banner.title} className="w-full h-[180px] object-cover" />
                   <div className="p-5">
-                    <p className="font-bold text-slate-900">{banner.title}</p>
-                    <p className="text-xs text-slate-500 mb-3">{banner.subtitle || 'No subtitle'}</p>
+                    <p className="font-bold" style={{ color: banner.titleColor || '#0F172A' }}>{banner.title}</p>
+                    <p className="text-xs mb-1" style={{ color: banner.subtitleColor || '#64748B' }}>{banner.subtitle || 'No subtitle'}</p>
+                    {banner.description && (
+                      <p className="text-xs mb-3" style={{ color: banner.descriptionColor || '#64748B' }}>{banner.description}</p>
+                    )}
                     <div className="flex gap-2">
                       <button className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold" onClick={() => handleEditBanner(banner)}>Edit</button>
                       <button className="px-4 py-2 bg-red-50 text-red-700 rounded-lg text-xs font-bold" onClick={() => deleteBanner(banner.id)}>Delete</button>

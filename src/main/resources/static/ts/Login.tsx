@@ -100,12 +100,8 @@ const Login: React.FC = () => {
             ].map((item) => (
               <button 
                 key={item.id}
-                onClick={() => {
-                  console.log('Clicked role:', item.id);
-                  console.log('Current role before:', role);
-                  setRole(item.id as any);
-                  console.log('Setting role to:', item.id);
-                }}
+                type="button"
+                onClick={() => setRole(item.id as any)}
                 className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 sm:py-3.5 px-1 sm:px-2 rounded-lg sm:rounded-xl font-bold text-[8px] sm:text-[10px] uppercase tracking-widest transition-all ${
                   role === item.id ? 'bg-blue-600 text-white shadow-lg transform scale-105' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
                 }`}

@@ -8,6 +8,9 @@ type HeroBanner = {
   title: string;
   subtitle?: string;
   description?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  descriptionColor?: string;
   imageUrl: string;
   imagePosition: 'LEFT' | 'CENTER' | 'RIGHT';
   primaryLinkText?: string;
@@ -96,9 +99,19 @@ const Home: React.FC = () => {
                 />
                 <div className="hero-banner-overlay" />
                 <div className="hero-banner-content">
-                  {activeBanner.subtitle && <p className="hero-banner-subtitle">{activeBanner.subtitle}</p>}
-                  <h1 className="hero-banner-title">{activeBanner.title}</h1>
-                  {activeBanner.description && <p className="hero-banner-description">{activeBanner.description}</p>}
+                  {activeBanner.subtitle && (
+                    <p className="hero-banner-subtitle" style={{ color: activeBanner.subtitleColor || '#E2E8F0' }}>
+                      {activeBanner.subtitle}
+                    </p>
+                  )}
+                  <h1 className="hero-banner-title" style={{ color: activeBanner.titleColor || '#FFFFFF' }}>
+                    {activeBanner.title}
+                  </h1>
+                  {activeBanner.description && (
+                    <p className="hero-banner-description" style={{ color: activeBanner.descriptionColor || '#F8FAFC' }}>
+                      {activeBanner.description}
+                    </p>
+                  )}
                   <div className="hero-banner-actions">
                     {activeBanner.primaryLinkText && activeBanner.primaryLinkUrl && (
                       <a href={activeBanner.primaryLinkUrl} className="site-button site-button-primary">
@@ -259,6 +272,7 @@ const Home: React.FC = () => {
               </motion.button>
             </div>
           )}
+        </div>
         </div>
       </section>
     </div>

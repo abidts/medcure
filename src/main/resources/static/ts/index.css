@@ -332,26 +332,15 @@ input::placeholder { color: var(--slate-300); }
 input:focus { outline: none; }
 
 button {
-  border: none !important;
-  background: transparent !important;
-  color: var(--blue-600) !important;
+  border: none;
   font-family: inherit;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  transition: color 0.2s ease, opacity 0.2s ease;
-}
-
-button:hover {
-  color: var(--blue-700);
-}
-
-button:active {
-  color: var(--blue-700);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 button:disabled {
   opacity: 0.55;
-  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* Keep admin dashboard buttons controlled by their utility classes */
