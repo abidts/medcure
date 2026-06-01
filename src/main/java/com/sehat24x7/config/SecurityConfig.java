@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/about-us/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/consultations/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/video-call-requests/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/video-call/**").permitAll()
                 // Auth endpoints (admin/staff/doctor login)
                 .requestMatchers("/api/auth/**").permitAll()
                 // Patient self-service registration and login
