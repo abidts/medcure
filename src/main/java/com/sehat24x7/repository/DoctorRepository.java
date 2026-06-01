@@ -2,6 +2,8 @@ package com.sehat24x7.repository;
 
 import com.sehat24x7.model.Doctor;
 import com.sehat24x7.model.Specialization;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,12 +15,19 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByEmail(String email);
+    
     List<Doctor> findBySpecialization(Specialization specialization);
+    
+    Page<Doctor> findBySpecialization(Specialization specialization, Pageable pageable);
+    
     List<Doctor> findByAvailableTrue();
+    
     List<Doctor> findBySpecializationAndAvailableTrue(Specialization specialization);
 
     @Query("SELECT d FROM Doctor d WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Doctor> searchByName(@Param("name") String name);
+    
+    List<Doctor> findByNameContainingIgnoreCase(String name);
 
     @Query("SELECT d FROM Doctor d WHERE d.consultationFee BETWEEN :minFee AND :maxFee")
     List<Doctor> findByConsultationFeeBetween(@Param("minFee") Double minFee, @Param("maxFee") Double maxFee);
@@ -27,4 +36,8 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     @Query("SELECT d FROM Doctor d WHERE d.user.id IN :userIds")
     List<Doctor> findByUserIdIn(@Param("userIds") List<Long> userIds);
+    
+    List<Doctor> findByOnlineStatusTrue();
+    
+    Page<Doctor> findByOnlineStatusTrue(Pageable pageable);
 }

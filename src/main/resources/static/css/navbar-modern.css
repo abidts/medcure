@@ -1,0 +1,219 @@
+/* ============================================
+   MODERN NAVBAR STYLES
+   ============================================ */
+
+.navbar-modern {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  gap: 2rem;
+}
+
+/* Logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--primary-600);
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.navbar-logo:hover {
+  color: var(--primary-700);
+}
+
+.logo-icon {
+  font-size: 1.75rem;
+}
+
+.logo-text {
+  background: linear-gradient(135deg, #4f5fd4, #d946ef);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Navigation Menu */
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  flex: 1;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #4f5fd4, #d946ef);
+  transition: width var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--primary-600);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Action Buttons */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.navbar-actions .btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.mobile-menu-toggle span {
+  width: 25px;
+  height: 3px;
+  background: var(--primary-600);
+  border-radius: 2px;
+  transition: all var(--transition-fast);
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(10px, 10px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .navbar-container {
+    height: 60px;
+    padding: 0 1rem;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .navbar-menu {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-primary);
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-base);
+  }
+
+  .navbar-menu.open {
+    max-height: 500px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0;
+  }
+
+  .nav-link::after {
+    display: none;
+  }
+
+  .navbar-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-left: 0;
+  }
+
+  .navbar-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .navbar-logo {
+    font-size: 1.1rem;
+  }
+
+  .logo-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    height: 50px;
+    gap: 1rem;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .navbar-menu {
+    top: 50px;
+  }
+}

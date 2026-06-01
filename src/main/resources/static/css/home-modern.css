@@ -1,0 +1,379 @@
+/* ============================================
+   MODERN HOME PAGE STYLES
+   ============================================ */
+
+.home-modern {
+  background: var(--bg-secondary);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.hero-section {
+  position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.hero-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+}
+
+.orb-1 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #4f5fd4, #6d8aef);
+  top: -50px;
+  right: -50px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #d946ef, #f565ff);
+  bottom: -100px;
+  left: -100px;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.orb-3 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  top: 50%;
+  left: 50%;
+  animation: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #4f5fd4 0%, #d946ef 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-content .btn {
+  margin-top: 1rem;
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+
+.features-section {
+  padding: 5rem 2rem;
+  background: var(--bg-primary);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-900);
+}
+
+.section-header p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-primary);
+  text-align: center;
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-300);
+  background: var(--bg-primary);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+  transition: transform var(--transition-base);
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.2) rotate(10deg);
+}
+
+.feature-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--primary-900);
+}
+
+.feature-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ============================================
+   SPECIALIZATIONS SECTION
+   ============================================ */
+
+.specializations-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.specializations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.specialization-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.specialization-card {
+  padding: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-primary);
+  text-align: center;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.specialization-card:hover {
+  border-color: var(--primary-600);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-12px);
+}
+
+.spec-icon-large {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  transition: transform var(--transition-base);
+}
+
+.specialization-card:hover .spec-icon-large {
+  transform: scale(1.3) rotate(-10deg);
+}
+
+.specialization-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--primary-900);
+  font-size: 1.25rem;
+}
+
+.specialization-card p {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.spec-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-primary);
+  gap: 1rem;
+}
+
+.spec-fee {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary-600);
+}
+
+.specialization-card .btn {
+  flex: 1;
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+
+.cta-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #4f5fd4 0%, #d946ef 100%);
+  color: white;
+}
+
+.cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cta-content h2 {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.cta-content p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-buttons .btn-outline {
+  border-color: white;
+  color: white;
+}
+
+.cta-buttons .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.6s ease-out;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 400px;
+    padding: 2rem 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .features-section,
+  .specializations-section,
+  .cta-section {
+    padding: 3rem 1rem;
+  }
+
+  .features-grid,
+  .specializations-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .cta-buttons .btn {
+    width: 100%;
+  }
+
+  .orb-1, .orb-2, .orb-3 {
+    filter: blur(100px);
+    opacity: 0.2;
+  }
+}

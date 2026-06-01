@@ -1,21 +1,22 @@
 package com.sehat24x7.controller;
 
+import com.sehat24x7.dto.ApiResponse;
 import com.sehat24x7.dto.ConsultationBookingRequest;
 import com.sehat24x7.dto.ConsultationBookingResponse;
 import com.sehat24x7.dto.ConsultationVerificationRequest;
 import com.sehat24x7.service.ConsultationBookingService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/consultations")
-@CrossOrigin(origins = "*")
-public class ConsultationBookingController {
+@CrossOrigin(origins = "*", maxAge = 3600)
+public class ConsultationBookingController extends BaseController {
 
     @Autowired
     private ConsultationBookingService consultationBookingService;
@@ -25,20 +26,10 @@ public class ConsultationBookingController {
      * POST /api/consultations/book
      */
     @PostMapping("/book")
-    public ResponseEntity<?> createConsultationBooking(@RequestBody ConsultationBookingRequest request) {
-        try {
-            ConsultationBookingResponse response = consultationBookingService.createConsultationBooking(request);
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("message", "Consultation booking created. Verification code sent to mobile number.");
-            result.put("data", response);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<ConsultationBookingResponse>> createConsultationBooking(
+            @Valid @RequestBody ConsultationBookingRequest request) {
+        ConsultationBookingResponse response = consultationBookingService.createConsultationBooking(request);
+        return created(response);
     }
 
     /**
@@ -46,23 +37,13 @@ public class ConsultationBookingController {
      * POST /api/consultations/verify
      */
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyConsultationBooking(@RequestBody ConsultationVerificationRequest request) {
-        try {
-            ConsultationBookingResponse response = consultationBookingService.verifyConsultationBooking(
-                    request.getConsultationBookingId(),
-                    request.getVerificationCode()
-            );
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("message", "Mobile number verified successfully.");
-            result.put("data", response);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<ConsultationBookingResponse>> verifyConsultationBooking(
+            @Valid @RequestBody ConsultationVerificationRequest request) {
+        ConsultationBookingResponse response = consultationBookingService.verifyConsultationBooking(
+                request.getConsultationBookingId(),
+                request.getVerificationCode()
+        );
+        return ok("Mobile number verified successfully", response);
     }
 
     /**
@@ -70,19 +51,9 @@ public class ConsultationBookingController {
      * GET /api/consultations/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getConsultationBooking(@PathVariable Long id) {
-        try {
-            ConsultationBookingResponse response = consultationBookingService.getConsultationBooking(id);
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("data", response);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<ConsultationBookingResponse>> getConsultationBooking(@PathVariable Long id) {
+        ConsultationBookingResponse response = consultationBookingService.getConsultationBooking(id);
+        return ok(response);
     }
 
     /**
@@ -90,19 +61,9 @@ public class ConsultationBookingController {
      * GET /api/consultations/status/{status}
      */
     @GetMapping("/status/{status}")
-    public ResponseEntity<?> getBookingsByStatus(@PathVariable String status) {
-        try {
-            List<ConsultationBookingResponse> responses = consultationBookingService.getBookingsByStatus(status);
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("data", responses);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<List<ConsultationBookingResponse>>> getBookingsByStatus(@PathVariable String status) {
+        List<ConsultationBookingResponse> responses = consultationBookingService.getBookingsByStatus(status);
+        return ok(responses);
     }
 
     /**
@@ -110,20 +71,9 @@ public class ConsultationBookingController {
      * POST /api/consultations/{id}/confirm
      */
     @PostMapping("/{id}/confirm")
-    public ResponseEntity<?> confirmConsultationBooking(@PathVariable Long id) {
-        try {
-            ConsultationBookingResponse response = consultationBookingService.confirmConsultationBooking(id);
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("message", "Consultation booking confirmed successfully.");
-            result.put("data", response);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<ConsultationBookingResponse>> confirmConsultationBooking(@PathVariable Long id) {
+        ConsultationBookingResponse response = consultationBookingService.confirmConsultationBooking(id);
+        return ok("Booking confirmed successfully", response);
     }
 
     /**
@@ -131,19 +81,9 @@ public class ConsultationBookingController {
      * DELETE /api/consultations/{id}/cancel
      */
     @DeleteMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelConsultationBooking(@PathVariable Long id) {
-        try {
-            consultationBookingService.cancelConsultationBooking(id);
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("message", "Consultation booking cancelled successfully.");
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<Void>> cancelConsultationBooking(@PathVariable Long id) {
+        consultationBookingService.cancelConsultationBooking(id);
+        return ResponseEntity.ok(ApiResponse.success("Booking cancelled successfully", null));
     }
 
     /**
@@ -151,18 +91,8 @@ public class ConsultationBookingController {
      * POST /api/consultations/{id}/resend-code
      */
     @PostMapping("/{id}/resend-code")
-    public ResponseEntity<?> resendVerificationCode(@PathVariable Long id) {
-        try {
-            consultationBookingService.resendVerificationCode(id);
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-            result.put("message", "Verification code resent to mobile number.");
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+    public ResponseEntity<ApiResponse<Void>> resendVerificationCode(@PathVariable Long id) {
+        consultationBookingService.resendVerificationCode(id);
+        return ok("Verification code resent successfully", null);
     }
 }
