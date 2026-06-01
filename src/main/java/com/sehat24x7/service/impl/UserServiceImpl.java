@@ -4,6 +4,7 @@ import com.sehat24x7.model.User;
 import com.sehat24x7.repository.UserRepository;
 import com.sehat24x7.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public User registerUser(User user, String password) {
@@ -88,12 +92,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private String hashPassword(String password) {
-        // In production, use BCrypt or similar
-        return "HASH_" + password;
+        return passwordEncoder.encode(password);
     }
 
     private boolean verifyPassword(String rawPassword, String hashedPassword) {
-        // In production, use BCrypt or similar
-        return hashedPassword.equals("HASH_" + rawPassword);
+        return passwordEncoder.matches(rawPassword, hashedPassword);
     }
 }

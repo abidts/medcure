@@ -18,6 +18,9 @@ public class PatientApiController {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
@@ -27,7 +30,7 @@ public class PatientApiController {
             patient.setPhone(request.getPhone());
             patient.setAge(request.getAge());
             patient.setGender(request.getGender());
-            patient.setPassword("HASH_" + request.getPassword());
+            patient.setPassword(passwordEncoder.encode(request.getPassword()));
             patient.setAddress(request.getAddress());
             patient.setBloodGroup(request.getBloodGroup());
             patient.setRegistrationDate(java.time.LocalDate.now());
@@ -62,7 +65,7 @@ public class PatientApiController {
             Patient patient = patientOpt.get();
 
             // Verify password
-            if (!patient.getPassword().equals("HASH_" + request.getPassword())) {
+            if (!passwordEncoder.matches(request.getPassword(), patient.getPassword())) {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", false);
                 response.put("message", "Invalid password");
