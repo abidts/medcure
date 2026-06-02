@@ -47,9 +47,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             User user = userService.authenticateUser(request.getEmail(), request.getPassword());
+            if (user == null) throw new RuntimeException("Invalid credentials");
             String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
 
             Map<String, Object> response = new HashMap<>();
