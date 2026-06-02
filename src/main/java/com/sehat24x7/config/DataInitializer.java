@@ -31,6 +31,9 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PatientRepository patientRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @Override
     public void run(String... args) {
         // Create default Super Admin
@@ -126,7 +129,7 @@ public class DataInitializer implements CommandLineRunner {
             adminUser.setEmail("admin@sehat24x7.com");
             adminUser.setName("Super Admin");
             adminUser.setPhone("+91 9906000000");
-            adminUser.setPassword("HASH_admin123");
+            adminUser.setPassword(passwordEncoder.encode("admin123"));
             adminUser.setRole(User.UserRole.SUPER_ADMIN);
             adminUser.setIsActive(true);
             adminUser.setCreatedAt(java.time.LocalDateTime.now());
@@ -194,7 +197,7 @@ public class DataInitializer implements CommandLineRunner {
         user.setEmail(email);
         user.setName(name);
         user.setPhone(phone);
-        user.setPassword("HASH_" + password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setRole(User.UserRole.DOCTOR);
         user.setIsActive(true);
         user.setCreatedAt(java.time.LocalDateTime.now());
@@ -283,7 +286,7 @@ public class DataInitializer implements CommandLineRunner {
             patient.setName("Test Patient");
             patient.setEmail("patient@test.com");
             patient.setPhone("+91 9906999999");
-            patient.setPassword("HASH_patient123");
+            patient.setPassword(passwordEncoder.encode("patient123"));
             patient.setAge(32);
             patient.setGender("Male");
             patient.setAddress("Test Address, Srinagar");

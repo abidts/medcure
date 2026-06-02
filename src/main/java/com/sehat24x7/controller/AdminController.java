@@ -47,6 +47,9 @@ public class AdminController {
     @Autowired
     private SystemSettingRepository systemSettingRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     // Get doctor by ID
     @GetMapping("/doctors/{id}")
     public ResponseEntity<?> getDoctorById(@PathVariable Long id) {
@@ -64,7 +67,7 @@ public class AdminController {
             user.setEmail(request.getEmail());
             user.setName(request.getName());
             user.setPhone(request.getPhone());
-            user.setPassword("HASH_" + request.getPassword());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setRole(request.isSuperAdmin() ? User.UserRole.SUPER_ADMIN : User.UserRole.ADMIN);
             user.setIsActive(true);
             user.setCreatedAt(java.time.LocalDateTime.now());

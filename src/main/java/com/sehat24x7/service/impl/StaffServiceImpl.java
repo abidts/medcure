@@ -21,6 +21,9 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private DoctorRepository doctorRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @Override
     public List<Staff> getStaffByDoctorId(Long doctorId) {
         return staffRepository.findByDoctorId(doctorId);
@@ -60,10 +63,7 @@ public class StaffServiceImpl implements StaffService {
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         staff.setDoctor(doctor);
         String password = staff.getPassword();
-        // Only add HASH_ prefix if not already present
-        if (!password.startsWith("HASH_")) {
-            staff.setPassword("HASH_" + password);
-        }
+        staff.setPassword(passwordEncoder.encode(password));
         return staffRepository.save(staff);
     }
 
@@ -82,8 +82,8 @@ public class StaffServiceImpl implements StaffService {
             existingStaff.setCanCreateLetterheads(staff.getCanCreateLetterheads());
             existingStaff.setIsActive(staff.getIsActive());
             
-            if (staff.getPassword() != null && !staff.getPassword().isEmpty() && !staff.getPassword().startsWith("HASH_")) {
-                existingStaff.setPassword("HASH_" + staff.getPassword());
+            if (staff.getPassword() != null && !staff.getPassword().isEmpty()) {
+                existingStaff.setPassword(passwordEncoder.encode(staff.getPassword()));
             }
             
             return staffRepository.save(existingStaff);
@@ -113,10 +113,7 @@ public class StaffServiceImpl implements StaffService {
                 return Optional.empty();
             }
             String storedPassword = staff.getPassword();
-            String expectedPassword = "HASH_" + password;
-            
-            // Support both hashed and plain password formats for backward compatibility
-            if (expectedPassword.equals(storedPassword) || password.equals(storedPassword)) {
+            if (passwordEncoder.matches(password, storedPassword)) {
                 return Optional.of(staff);
             }
         }

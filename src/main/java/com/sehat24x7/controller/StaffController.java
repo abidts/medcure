@@ -83,10 +83,6 @@ public class StaffController {
             Staff staff = new Staff();
             staff.setUsername((String) staffData.get("username"));
             String password = (String) staffData.get("password");
-            // Only add HASH_ prefix if not already present
-            if (!password.startsWith("HASH_")) {
-                password = "HASH_" + password;
-            }
             staff.setPassword(password);
             staff.setName((String) staffData.get("name"));
             staff.setEmail((String) staffData.get("email"));

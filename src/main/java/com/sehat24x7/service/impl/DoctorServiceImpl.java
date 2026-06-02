@@ -32,6 +32,9 @@ public class DoctorServiceImpl implements DoctorService {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @Override
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
@@ -120,7 +123,7 @@ public class DoctorServiceImpl implements DoctorService {
         user.setEmail(doctor.getEmail());
         user.setName(doctor.getName());
         user.setPhone(doctor.getPhone());
-        user.setPassword("HASH_" + password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setRole(User.UserRole.DOCTOR);
         user.setIsActive(true);
         user.setCreatedAt(java.time.LocalDateTime.now());
