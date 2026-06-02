@@ -2,6 +2,7 @@ package com.sehat24x7.controller;
 
 import com.sehat24x7.model.Patient;
 import com.sehat24x7.service.PatientService;
+import com.sehat24x7.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ public class PatientApiController {
 
     @Autowired
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -72,9 +76,12 @@ public class PatientApiController {
                 return ResponseEntity.badRequest().body(response);
             }
 
+            String token = jwtUtil.generateToken(patient.getId(), patient.getEmail(), "PATIENT");
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login successful");
+            response.put("token", token);
             response.put("patient", patient);
             return ResponseEntity.ok(response);
 

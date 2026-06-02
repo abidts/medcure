@@ -2,6 +2,7 @@ package com.sehat24x7.controller;
 
 import com.sehat24x7.model.User;
 import com.sehat24x7.service.UserService;
+import com.sehat24x7.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
@@ -46,17 +50,17 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             User user = userService.authenticateUser(request.getEmail(), request.getPassword());
+            String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login successful");
+            response.put("token", token);
             response.put("user", user);
-            
-            // Include doctorId for doctor users
+
             if (user.getRole() == User.UserRole.DOCTOR && user.getDoctor() != null) {
                 response.put("doctorId", user.getDoctor().getId());
             }
-            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
