@@ -38,13 +38,19 @@ const Login: React.FC = () => {
         }
 
         const userRole = role.toUpperCase();
-        
+
+        // Store token
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+
         // Use AuthContext login function
         login({
           id: user.id,
           name: user.name,
           email: user.email,
-          role: userRole
+          role: userRole,
+          token: data.token,
         });
 
         // Store doctorId for doctor users

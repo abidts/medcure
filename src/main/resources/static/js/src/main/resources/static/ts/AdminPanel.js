@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, UserCheck, Settings, Trash2, Edit3, Plus, LayoutDashboard, Database, Shield, Activity, Info, LogOut, Bell, ChevronRight, Download, RefreshCw, ImageIcon, Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { apiFetch } from './api';
 const AdminPanel = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
@@ -49,7 +50,7 @@ const AdminPanel = () => {
     }, [activeTab]);
     const fetchStats = async () => {
         try {
-            const response = await fetch('/api/admin/dashboard/stats');
+            const response = await apiFetch('/api/admin/dashboard/stats');
             if (!response.ok)
                 throw new Error('Failed to fetch stats');
             const result = await response.json();
@@ -90,7 +91,7 @@ const AdminPanel = () => {
                     setLoading(false);
                     return;
             }
-            const response = await fetch(endpoint);
+            const response = await apiFetch(endpoint);
             if (!response.ok)
                 throw new Error(`Failed to fetch ${tab}`);
             const result = await response.json();
@@ -108,7 +109,7 @@ const AdminPanel = () => {
     };
     const loadSettings = async () => {
         try {
-            const response = await fetch('/api/admin/settings');
+            const response = await apiFetch('/api/admin/settings');
             if (!response.ok)
                 throw new Error('Failed to load settings');
             const result = await response.json();
@@ -120,9 +121,8 @@ const AdminPanel = () => {
     };
     const saveSettings = async () => {
         try {
-            const response = await fetch('/api/admin/settings', {
+            const response = await apiFetch('/api/admin/settings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settings)
             });
             if (!response.ok)
@@ -148,7 +148,7 @@ const AdminPanel = () => {
             return;
         setActionLoadingId(`delete-${row.id}`);
         try {
-            const response = await fetch(endpoint, { method: 'DELETE' });
+            const response = await apiFetch(endpoint, { method: 'DELETE' });
             if (!response.ok)
                 throw new Error('Delete failed');
             await loadTabData(activeTab);
@@ -173,7 +173,7 @@ const AdminPanel = () => {
             return;
         setActionLoadingId(`toggle-${row.id}`);
         try {
-            const response = await fetch(cfg.endpoint, { method: cfg.method || 'POST' });
+            const response = await apiFetch(cfg.endpoint, { method: cfg.method || 'POST' });
             if (!response.ok)
                 throw new Error('Toggle failed');
             await loadTabData(activeTab);
@@ -220,9 +220,8 @@ const AdminPanel = () => {
             else {
                 return;
             }
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             if (!response.ok)
@@ -288,9 +287,8 @@ const AdminPanel = () => {
         try {
             const url = editingBannerId ? `/api/hero-banners/${editingBannerId}` : '/api/hero-banners';
             const method = editingBannerId ? 'PUT' : 'POST';
-            const resp = await fetch(url, {
+            const resp = await apiFetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bannerForm)
             });
             if (!resp.ok)
@@ -306,7 +304,7 @@ const AdminPanel = () => {
         if (!window.confirm('Delete this banner?'))
             return;
         try {
-            const resp = await fetch(`/api/hero-banners/${id}`, { method: 'DELETE' });
+            const resp = await apiFetch(`/api/hero-banners/${id}`, { method: 'DELETE' });
             if (!resp.ok)
                 throw new Error('Failed to delete banner');
             loadTabData('hero-banners');

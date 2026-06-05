@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Calendar, Clock, 
+import {
+  Calendar, Clock,
   CheckCircle, AlertCircle, ChevronLeft, Loader2, Info
 } from 'lucide-react';
 import { useParams, Link } from 'react-router-dom';
+import { apiFetch } from './api';
 
 const AppointmentForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -45,8 +46,8 @@ const AppointmentForm: React.FC = () => {
     setError(null);
     try {
       const [docResp, availResp] = await Promise.all([
-        fetch(`/api/doctors/${id}`),
-        fetch(`/api/doctor/dashboard/availability/${id}`)
+        apiFetch(`/api/doctors/${id}`),
+        apiFetch(`/api/doctor/dashboard/availability/${id}`)
       ]);
       if (docResp.ok) {
         const docData = await docResp.json();
@@ -85,7 +86,7 @@ const AppointmentForm: React.FC = () => {
     setError(null);
     setSelectedSlot(null);
     try {
-      const resp = await fetch(`/api/doctor/dashboard/available-slots/${docId}?date=${date}&type=${type}`);
+      const resp = await apiFetch(`/api/doctor/dashboard/available-slots/${docId}?date=${date}&type=${type}`);
       if (resp.ok) {
         const data = await resp.json();
         const normalizedSlots = Array.isArray(data)
@@ -127,9 +128,8 @@ const AppointmentForm: React.FC = () => {
     
     setLoading(true);
     try {
-      const resp = await fetch('/api/appointments', {
+      const resp = await apiFetch('/api/appointments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           patientId: parseInt(patientId),
           doctorId: parseInt(doctorId || '0'),

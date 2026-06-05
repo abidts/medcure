@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, Calendar, Video, Clock, Users, User, LogOut, 
+import {
+  LayoutDashboard, Calendar, Video, Clock, Users, User, LogOut,
   CheckCircle2, AlertCircle, Search, Trash2, Plus, ArrowRight,
   Stethoscope, IndianRupee, MapPin, Mail, Phone, GraduationCap, Briefcase,
   RefreshCw, Edit, Save, X, Video as VideoIcon, CalendarCheck, Clock3,
   UserPlus, Building, FileText, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { apiFetch } from './api';
 
 const DoctorDashboard: React.FC = () => {
   const { logout } = useAuth();
@@ -81,7 +82,7 @@ const DoctorDashboard: React.FC = () => {
       
       // Fetch doctor online status
       try {
-        const statusRes = await fetch(`/api/doctor/dashboard/online-status/${doctorId}`);
+        const statusRes = await apiFetch(`/api/doctor/dashboard/online-status/${doctorId}`);
         if (statusRes.ok) {
           const statusData = await statusRes.json();
           setIsOnline(statusData.onlineStatus);
@@ -92,7 +93,7 @@ const DoctorDashboard: React.FC = () => {
 
       // Fetch doctor profile
       try {
-        const doctorRes = await fetch(`/api/doctor/dashboard/profile/${userId}`);
+        const doctorRes = await apiFetch(`/api/doctor/dashboard/profile/${userId}`);
         if (doctorRes.ok) {
           const doctorData = await doctorRes.json();
           setDoctor(doctorData);
@@ -127,7 +128,7 @@ const DoctorDashboard: React.FC = () => {
 
       // Fetch doctor appointments
       try {
-        const appointmentsRes = await fetch(`/api/doctor/dashboard/appointments/${doctorId}?filter=today`);
+        const appointmentsRes = await apiFetch(`/api/doctor/dashboard/appointments/${doctorId}?filter=today`);
         if (appointmentsRes.ok) {
           const appointmentsResponse = await appointmentsRes.json();
           // Backend returns {appointments: [...], count: X, filter: "today"}
@@ -153,7 +154,7 @@ const DoctorDashboard: React.FC = () => {
 
       // Fetch doctor stats
       try {
-        const statsRes = await fetch(`/api/doctor/dashboard/stats/${doctorId}`);
+        const statsRes = await apiFetch(`/api/doctor/dashboard/stats/${doctorId}`);
         if (statsRes.ok) {
           const statsData = await statsRes.json();
           // Map backend field names to frontend expectations
@@ -202,9 +203,8 @@ const DoctorDashboard: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`/api/doctor/dashboard/toggle-online/${doctorId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      const res = await apiFetch(`/api/doctor/dashboard/toggle-online/${doctorId}`, {
+        method: 'POST'
       });
       
       if (res.ok) {
@@ -247,14 +247,13 @@ const DoctorDashboard: React.FC = () => {
 
     setSaving(true);
     try {
-      const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}`, {
+      const res = await apiFetch(`/api/doctor/dashboard/profile/${doctorId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileForm)
       });
       if (res.ok) {
         const userId = localStorage.getItem('userId');
-        const doctorRes = await fetch(`/api/doctor/dashboard/profile/${userId}`);
+        const doctorRes = await apiFetch(`/api/doctor/dashboard/profile/${userId}`);
         if (doctorRes.ok) {
           const updatedDoctor = await doctorRes.json();
           setDoctor(updatedDoctor);
@@ -335,8 +334,12 @@ const DoctorDashboard: React.FC = () => {
       const croppedFile = await createCenterSquareCroppedFile(file);
       const formData = new FormData();
       formData.append('file', croppedFile);
+      const token = localStorage.getItem('token');
+      const imageUploadHeaders: Record<string, string> = {};
+      if (token) imageUploadHeaders['Authorization'] = `Bearer ${token}`;
       const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}/image`, {
         method: 'POST',
+        headers: imageUploadHeaders,
         body: formData
       });
       if (res.ok) {
@@ -362,7 +365,7 @@ const DoctorDashboard: React.FC = () => {
     const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) return;
     try {
-      const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}/image`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/doctor/dashboard/profile/${doctorId}/image`, { method: 'DELETE' });
       if (res.ok) {
         setProfileForm((prev: any) => ({ ...prev, image: '' }));
         setDoctor((prev: any) => ({ ...prev, image: '' }));
@@ -393,7 +396,7 @@ const DoctorDashboard: React.FC = () => {
     if (!doctorId) return;
 
     try {
-      const res = await fetch(`/api/doctor/dashboard/availability/${doctorId}`);
+      const res = await apiFetch(`/api/doctor/dashboard/availability/${doctorId}`);
       if (res.ok) {
         const data = await res.json();
         setAvailabilities(data);
@@ -430,9 +433,8 @@ const DoctorDashboard: React.FC = () => {
     console.log('Saving availability:', newAvailability);
 
     try {
-      const res = await fetch('/api/doctor/dashboard/availability', {
+      const res = await apiFetch('/api/doctor/dashboard/availability', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newAvailability)
       });
       
@@ -458,7 +460,7 @@ const DoctorDashboard: React.FC = () => {
 
   const handleDeleteAvailability = async (id: number) => {
     try {
-      const res = await fetch(`/api/doctor/dashboard/availability/${id}`, {
+      const res = await apiFetch(`/api/doctor/dashboard/availability/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -471,9 +473,8 @@ const DoctorDashboard: React.FC = () => {
 
   const handleUpdateAppointmentStatus = async (appointmentId: number, status: string) => {
     try {
-      const res = await fetch(`/api/doctor/dashboard/appointments/${appointmentId}/status`, {
+      const res = await apiFetch(`/api/doctor/dashboard/appointments/${appointmentId}/status`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
       if (res.ok) {
@@ -489,7 +490,7 @@ const DoctorDashboard: React.FC = () => {
     if (!doctorId) return;
 
     try {
-      const res = await fetch(`/api/video-call/doctor/${doctorId}/requests`);
+      const res = await apiFetch(`/api/video-call/doctor/${doctorId}/requests`);
       if (res.ok) {
         const data = await res.json();
         setVideoRequests(data);
@@ -501,7 +502,7 @@ const DoctorDashboard: React.FC = () => {
 
   const handleAcceptVideoCall = async (requestId: number) => {
     try {
-      const res = await fetch(`/api/video-call/request/${requestId}/accept`, {
+      const res = await apiFetch(`/api/video-call/request/${requestId}/accept`, {
         method: 'POST'
       });
       if (res.ok) {
@@ -518,7 +519,7 @@ const DoctorDashboard: React.FC = () => {
 
   const handleRejectVideoCall = async (requestId: number) => {
     try {
-      const res = await fetch(`/api/video-call/request/${requestId}/reject`, {
+      const res = await apiFetch(`/api/video-call/request/${requestId}/reject`, {
         method: 'POST'
       });
       if (res.ok) {
@@ -534,7 +535,7 @@ const DoctorDashboard: React.FC = () => {
     if (!doctorId) return;
 
     try {
-      const res = await fetch(`/api/staff/doctor/${doctorId}`);
+      const res = await apiFetch(`/api/staff/doctor/${doctorId}`);
       if (res.ok) {
         const data = await res.json();
         setStaff(data);
@@ -563,9 +564,8 @@ const DoctorDashboard: React.FC = () => {
     if (!doctorId) return;
 
     try {
-      const res = await fetch('/api/staff', {
+      const res = await apiFetch('/api/staff', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...staffForm,
           doctorId: parseInt(doctorId)
@@ -584,7 +584,7 @@ const DoctorDashboard: React.FC = () => {
 
   const handleDeleteStaff = async (staffId: number) => {
     try {
-      const res = await fetch(`/api/staff/${staffId}`, {
+      const res = await apiFetch(`/api/staff/${staffId}`, {
         method: 'DELETE'
       });
       if (res.ok) {

@@ -45,6 +45,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('userRole', userData.role);
         localStorage.setItem('userName', userData.name);
         localStorage.setItem('userEmail', userData.email);
+        if (userData.token) {
+            localStorage.setItem('token', userData.token);
+        }
         // Set role-specific IDs
         if (userData.role === 'PATIENT') {
             localStorage.setItem('patientId', userData.id);
@@ -67,6 +70,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('patientId');
         localStorage.removeItem('patientName');
         localStorage.removeItem('doctorId');
+        localStorage.removeItem('token');
     };
     const isAuthenticated = !!user;
     return (_jsx(AuthContext.Provider, { value: { user, login, logout, isAuthenticated, isLoading }, children: children }));

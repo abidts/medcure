@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, UserCheck, UserPlus, Settings, 
-  Trash2, Edit3, Plus, Search, Filter, 
-  LayoutDashboard, Database, 
-  Shield, Activity, Calendar, Info, 
-  LogOut, Star, CheckCircle, XCircle, 
+import {
+  Users, UserCheck, UserPlus, Settings,
+  Trash2, Edit3, Plus, Search, Filter,
+  LayoutDashboard, Database,
+  Shield, Activity, Calendar, Info,
+  LogOut, Star, CheckCircle, XCircle,
   Bell, HelpCircle, ChevronRight, Download, RefreshCw, ImageIcon, Menu, X
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { apiFetch } from './api';
 
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const AdminPanel: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/admin/dashboard/stats');
+      const response = await apiFetch('/api/admin/dashboard/stats');
       if (!response.ok) throw new Error('Failed to fetch stats');
       const result = await response.json();
       setStats(result);
@@ -88,7 +89,7 @@ const AdminPanel: React.FC = () => {
         default: setLoading(false); return;
       }
       
-      const response = await fetch(endpoint);
+      const response = await apiFetch(endpoint);
       if (!response.ok) throw new Error(`Failed to fetch ${tab}`);
       const result = await response.json();
       setData(Array.isArray(result) ? result : []);
@@ -104,7 +105,7 @@ const AdminPanel: React.FC = () => {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings');
+      const response = await apiFetch('/api/admin/settings');
       if (!response.ok) throw new Error('Failed to load settings');
       const result = await response.json();
       setSettings((prev) => ({ ...prev, ...result }));
@@ -115,9 +116,8 @@ const AdminPanel: React.FC = () => {
 
   const saveSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings', {
+      const response = await apiFetch('/api/admin/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
       });
       if (!response.ok) throw new Error('Failed to save settings');
@@ -140,7 +140,7 @@ const AdminPanel: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this record?')) return;
     setActionLoadingId(`delete-${row.id}`);
     try {
-      const response = await fetch(endpoint, { method: 'DELETE' });
+      const response = await apiFetch(endpoint, { method: 'DELETE' });
       if (!response.ok) throw new Error('Delete failed');
       await loadTabData(activeTab);
       if (activeTab !== 'announcements') await fetchStats();
@@ -161,7 +161,7 @@ const AdminPanel: React.FC = () => {
     if (!cfg) return;
     setActionLoadingId(`toggle-${row.id}`);
     try {
-      const response = await fetch(cfg.endpoint, { method: cfg.method || 'POST' });
+      const response = await apiFetch(cfg.endpoint, { method: cfg.method || 'POST' });
       if (!response.ok) throw new Error('Toggle failed');
       await loadTabData(activeTab);
       if (activeTab !== 'announcements') await fetchStats();
@@ -202,9 +202,8 @@ const AdminPanel: React.FC = () => {
       } else {
         return;
       }
-      const response = await fetch(endpoint, {
+      const response = await apiFetch(endpoint, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       if (!response.ok) throw new Error('Update failed');
@@ -273,9 +272,8 @@ const AdminPanel: React.FC = () => {
     try {
       const url = editingBannerId ? `/api/hero-banners/${editingBannerId}` : '/api/hero-banners';
       const method = editingBannerId ? 'PUT' : 'POST';
-      const resp = await fetch(url, {
+      const resp = await apiFetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bannerForm)
       });
       if (!resp.ok) throw new Error('Failed to save banner');
@@ -289,7 +287,7 @@ const AdminPanel: React.FC = () => {
   const deleteBanner = async (id: number) => {
     if (!window.confirm('Delete this banner?')) return;
     try {
-      const resp = await fetch(`/api/hero-banners/${id}`, { method: 'DELETE' });
+      const resp = await apiFetch(`/api/hero-banners/${id}`, { method: 'DELETE' });
       if (!resp.ok) throw new Error('Failed to delete banner');
       loadTabData('hero-banners');
     } catch (err) {

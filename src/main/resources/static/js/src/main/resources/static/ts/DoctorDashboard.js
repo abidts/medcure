@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Calendar, Video, Clock, Users, User, LogOut, Trash2, Plus, ArrowRight, Stethoscope, IndianRupee, MapPin, Mail, Phone, GraduationCap, Briefcase, RefreshCw, Edit, Video as VideoIcon, Clock3, UserPlus } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { apiFetch } from './api';
 const DoctorDashboard = () => {
     const { logout } = useAuth();
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -72,7 +73,7 @@ const DoctorDashboard = () => {
             }
             // Fetch doctor online status
             try {
-                const statusRes = await fetch(`/api/doctor/dashboard/online-status/${doctorId}`);
+                const statusRes = await apiFetch(`/api/doctor/dashboard/online-status/${doctorId}`);
                 if (statusRes.ok) {
                     const statusData = await statusRes.json();
                     setIsOnline(statusData.onlineStatus);
@@ -83,7 +84,7 @@ const DoctorDashboard = () => {
             }
             // Fetch doctor profile
             try {
-                const doctorRes = await fetch(`/api/doctor/dashboard/profile/${userId}`);
+                const doctorRes = await apiFetch(`/api/doctor/dashboard/profile/${userId}`);
                 if (doctorRes.ok) {
                     const doctorData = await doctorRes.json();
                     setDoctor(doctorData);
@@ -119,7 +120,7 @@ const DoctorDashboard = () => {
             }
             // Fetch doctor appointments
             try {
-                const appointmentsRes = await fetch(`/api/doctor/dashboard/appointments/${doctorId}?filter=today`);
+                const appointmentsRes = await apiFetch(`/api/doctor/dashboard/appointments/${doctorId}?filter=today`);
                 if (appointmentsRes.ok) {
                     const appointmentsResponse = await appointmentsRes.json();
                     // Backend returns {appointments: [...], count: X, filter: "today"}
@@ -146,7 +147,7 @@ const DoctorDashboard = () => {
             }
             // Fetch doctor stats
             try {
-                const statsRes = await fetch(`/api/doctor/dashboard/stats/${doctorId}`);
+                const statsRes = await apiFetch(`/api/doctor/dashboard/stats/${doctorId}`);
                 if (statsRes.ok) {
                     const statsData = await statsRes.json();
                     // Map backend field names to frontend expectations
@@ -196,9 +197,8 @@ const DoctorDashboard = () => {
             return;
         }
         try {
-            const res = await fetch(`/api/doctor/dashboard/toggle-online/${doctorId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+            const res = await apiFetch(`/api/doctor/dashboard/toggle-online/${doctorId}`, {
+                method: 'POST'
             });
             if (res.ok) {
                 const data = await res.json();
@@ -239,14 +239,13 @@ const DoctorDashboard = () => {
             return;
         setSaving(true);
         try {
-            const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}`, {
+            const res = await apiFetch(`/api/doctor/dashboard/profile/${doctorId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(profileForm)
             });
             if (res.ok) {
                 const userId = localStorage.getItem('userId');
-                const doctorRes = await fetch(`/api/doctor/dashboard/profile/${userId}`);
+                const doctorRes = await apiFetch(`/api/doctor/dashboard/profile/${userId}`);
                 if (doctorRes.ok) {
                     const updatedDoctor = await doctorRes.json();
                     setDoctor(updatedDoctor);
@@ -320,8 +319,13 @@ const DoctorDashboard = () => {
             const croppedFile = await createCenterSquareCroppedFile(file);
             const formData = new FormData();
             formData.append('file', croppedFile);
+            const token = localStorage.getItem('token');
+            const imageUploadHeaders = {};
+            if (token)
+                imageUploadHeaders['Authorization'] = `Bearer ${token}`;
             const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}/image`, {
                 method: 'POST',
+                headers: imageUploadHeaders,
                 body: formData
             });
             if (res.ok) {
@@ -349,7 +353,7 @@ const DoctorDashboard = () => {
         if (!doctorId)
             return;
         try {
-            const res = await fetch(`/api/doctor/dashboard/profile/${doctorId}/image`, { method: 'DELETE' });
+            const res = await apiFetch(`/api/doctor/dashboard/profile/${doctorId}/image`, { method: 'DELETE' });
             if (res.ok) {
                 setProfileForm((prev) => ({ ...prev, image: '' }));
                 setDoctor((prev) => ({ ...prev, image: '' }));
@@ -381,7 +385,7 @@ const DoctorDashboard = () => {
         if (!doctorId)
             return;
         try {
-            const res = await fetch(`/api/doctor/dashboard/availability/${doctorId}`);
+            const res = await apiFetch(`/api/doctor/dashboard/availability/${doctorId}`);
             if (res.ok) {
                 const data = await res.json();
                 setAvailabilities(data);
@@ -414,9 +418,8 @@ const DoctorDashboard = () => {
         };
         console.log('Saving availability:', newAvailability);
         try {
-            const res = await fetch('/api/doctor/dashboard/availability', {
+            const res = await apiFetch('/api/doctor/dashboard/availability', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newAvailability)
             });
             if (res.ok) {
@@ -443,7 +446,7 @@ const DoctorDashboard = () => {
     };
     const handleDeleteAvailability = async (id) => {
         try {
-            const res = await fetch(`/api/doctor/dashboard/availability/${id}`, {
+            const res = await apiFetch(`/api/doctor/dashboard/availability/${id}`, {
                 method: 'DELETE'
             });
             if (res.ok) {
@@ -456,9 +459,8 @@ const DoctorDashboard = () => {
     };
     const handleUpdateAppointmentStatus = async (appointmentId, status) => {
         try {
-            const res = await fetch(`/api/doctor/dashboard/appointments/${appointmentId}/status`, {
+            const res = await apiFetch(`/api/doctor/dashboard/appointments/${appointmentId}/status`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status })
             });
             if (res.ok) {
@@ -474,7 +476,7 @@ const DoctorDashboard = () => {
         if (!doctorId)
             return;
         try {
-            const res = await fetch(`/api/video-call/doctor/${doctorId}/requests`);
+            const res = await apiFetch(`/api/video-call/doctor/${doctorId}/requests`);
             if (res.ok) {
                 const data = await res.json();
                 setVideoRequests(data);
@@ -486,7 +488,7 @@ const DoctorDashboard = () => {
     };
     const handleAcceptVideoCall = async (requestId) => {
         try {
-            const res = await fetch(`/api/video-call/request/${requestId}/accept`, {
+            const res = await apiFetch(`/api/video-call/request/${requestId}/accept`, {
                 method: 'POST'
             });
             if (res.ok) {
@@ -503,7 +505,7 @@ const DoctorDashboard = () => {
     };
     const handleRejectVideoCall = async (requestId) => {
         try {
-            const res = await fetch(`/api/video-call/request/${requestId}/reject`, {
+            const res = await apiFetch(`/api/video-call/request/${requestId}/reject`, {
                 method: 'POST'
             });
             if (res.ok) {
@@ -519,7 +521,7 @@ const DoctorDashboard = () => {
         if (!doctorId)
             return;
         try {
-            const res = await fetch(`/api/staff/doctor/${doctorId}`);
+            const res = await apiFetch(`/api/staff/doctor/${doctorId}`);
             if (res.ok) {
                 const data = await res.json();
                 setStaff(data);
@@ -547,9 +549,8 @@ const DoctorDashboard = () => {
         if (!doctorId)
             return;
         try {
-            const res = await fetch('/api/staff', {
+            const res = await apiFetch('/api/staff', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...staffForm,
                     doctorId: parseInt(doctorId)
@@ -568,7 +569,7 @@ const DoctorDashboard = () => {
     };
     const handleDeleteStaff = async (staffId) => {
         try {
-            const res = await fetch(`/api/staff/${staffId}`, {
+            const res = await apiFetch(`/api/staff/${staffId}`, {
                 method: 'DELETE'
             });
             if (res.ok) {

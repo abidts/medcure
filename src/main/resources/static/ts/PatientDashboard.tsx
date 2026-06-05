@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, Calendar, FileText, Wallet, User, LogOut, 
-  Home, CheckCircle2, Clock, AlertCircle, Plus, Search, 
+import {
+  LayoutDashboard, Calendar, FileText, Wallet, User, LogOut,
+  Home, CheckCircle2, Clock, AlertCircle, Plus, Search,
   CreditCard, ChevronRight, Video, X, Mail, Phone, MapPin
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { apiFetch } from './api';
 
 const PatientDashboard: React.FC = () => {
   const { logout } = useAuth();
@@ -33,8 +34,8 @@ const PatientDashboard: React.FC = () => {
     try {
       // Fetch patient profile
       const [patientResp, apptResp] = await Promise.all([
-        fetch(`/api/patients/${patientId}`),
-        fetch(`/api/appointments/patient/${patientId}`)
+        apiFetch(`/api/patients/${patientId}`),
+        apiFetch(`/api/appointments/patient/${patientId}`)
       ]);
 
       if (patientResp.ok) {
@@ -49,7 +50,7 @@ const PatientDashboard: React.FC = () => {
 
       // Wallet balance (may not exist yet, default to 0)
       try {
-        const walletResp = await fetch(`/api/patients/${patientId}/wallet`);
+        const walletResp = await apiFetch(`/api/patients/${patientId}/wallet`);
         if (walletResp.ok) {
           const wData = await walletResp.json();
           setWalletBalance(wData.balance || 0);

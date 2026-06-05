@@ -5,6 +5,7 @@ interface User {
   name: string;
   email: string;
   role: string;
+  token?: string;
 }
 
 interface AuthContextType {
@@ -41,13 +42,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userRole = localStorage.getItem('userRole');
         const userName = localStorage.getItem('userName');
         const userEmail = localStorage.getItem('userEmail');
+        const token = localStorage.getItem('token');
 
-        if (userId && userRole) {
+        if (userId && userRole && token) {
           setUser({
             id: userId,
             name: userName || 'User',
             email: userEmail || '',
-            role: userRole
+            role: userRole,
+            token
           });
         }
       } catch (error) {
@@ -68,7 +71,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('userRole', userData.role);
     localStorage.setItem('userName', userData.name);
     localStorage.setItem('userEmail', userData.email);
-    
+    if (userData.token) {
+      localStorage.setItem('token', userData.token);
+    }
+
     // Set role-specific IDs
     if (userData.role === 'PATIENT') {
       localStorage.setItem('patientId', userData.id);
@@ -92,6 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('patientId');
     localStorage.removeItem('patientName');
     localStorage.removeItem('doctorId');
+    localStorage.removeItem('token');
   };
 
   const isAuthenticated = !!user;
