@@ -819,15 +819,14 @@ body {
 }
 
 .hero-section {
-  padding: 4rem 0 3rem;
+  padding: 0;
 }
 
 .hero-banner-shell {
   position: relative;
   min-height: 420px;
-  border-radius: 28px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: var(--shadow-strong);
 }
 
 .hero-banner-image {
@@ -1265,7 +1264,7 @@ body {
 
 @media (max-width: 767px) {
   .hero-section {
-    padding-top: 2rem;
+    padding-top: 0;
   }
 
   .hero-title {

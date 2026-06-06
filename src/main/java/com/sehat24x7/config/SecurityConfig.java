@@ -33,11 +33,15 @@ public class SecurityConfig {
             .cors(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Static assets and frontend SPA routes
+                // Static assets
                 .requestMatchers("/", "/index.html", "/assets/**", "/static/**",
                                  "/js/**", "/css/**", "/images/**", "/*.js", "/*.css", "/*.map").permitAll()
-                // Frontend catch-all (FrontendController handles SPA routing)
                 .requestMatchers("/favicon.ico", "/error").permitAll()
+                // Frontend SPA routes — served as index.html; React handles client-side auth
+                .requestMatchers("/login", "/about-us", "/tools", "/dictionary", "/doctor-register").permitAll()
+                .requestMatchers("/doctors/**", "/patients/**", "/patient/**").permitAll()
+                .requestMatchers("/appointments/**", "/consultations/**", "/consultation/**").permitAll()
+                .requestMatchers("/doctor/**", "/staff/**", "/admin-panel").permitAll()
                 // Public API endpoints - read-only data
                 .requestMatchers(HttpMethod.GET, "/api/doctors/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/specializations/**").permitAll()

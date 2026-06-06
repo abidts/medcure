@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -46,9 +45,6 @@ public class DoctorDashboardController {
 
     @Autowired
     private DoctorAvailabilityService availabilityService;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Autowired
     private DoctorEducationService educationService;
@@ -343,27 +339,20 @@ public class DoctorDashboardController {
 
     // Toggle doctor online status
     @PostMapping("/toggle-online/{doctorId}")
+    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<Map<String, Object>> toggleDoctorOnlineStatus(@PathVariable Long doctorId) {
         try {
-            // Use native query to update the online_status directly
-            String sql = "UPDATE doctors SET online_status = NOT online_status WHERE id = :doctorId";
-            int updated = entityManager.createNativeQuery(sql)
-                    .setParameter("doctorId", doctorId)
-                    .executeUpdate();
-            
-            if (updated == 0) {
-                throw new RuntimeException("Doctor not found");
-            }
-            
-            // Get the updated status
             Doctor doctor = doctorRepository.findById(doctorId)
                     .orElseThrow(() -> new RuntimeException("Doctor not found"));
-            
+
+            doctor.setOnlineStatus(!Boolean.TRUE.equals(doctor.getOnlineStatus()));
+            doctorRepository.save(doctor);
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("onlineStatus", doctor.getOnlineStatus());
-            response.put("message", doctor.getOnlineStatus() ? "You are now online" : "You are now offline");
-            
+            response.put("message", Boolean.TRUE.equals(doctor.getOnlineStatus()) ? "You are now online" : "You are now offline");
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();

@@ -87,8 +87,7 @@ const Home: React.FC = () => {
   return (
     <div className="page-section home-page">
       <header className="hero-section">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-          <div className="hero-banner-shell">
+        <div className="hero-banner-shell">
             {activeBanner ? (
               <>
                 <img
@@ -161,7 +160,6 @@ const Home: React.FC = () => {
                 <p className="hero-banner-description">Add hero banners from the admin panel to customize this space.</p>
               </div>
             )}
-          </div>
         </div>
       </header>
 

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Calendar, Video, Clock, Users, User, LogOut,
-  CheckCircle2, AlertCircle, Search, Trash2, Plus, ArrowRight,
+  Trash2, Plus, ArrowRight,
   Stethoscope, IndianRupee, MapPin, Mail, Phone, GraduationCap, Briefcase,
-  RefreshCw, Edit, Save, X, Video as VideoIcon, CalendarCheck, Clock3,
-  UserPlus, Building, FileText, ChevronDown, ChevronUp
+  RefreshCw, Edit, Video as VideoIcon, Clock3,
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import { apiFetch } from './api';
@@ -1247,7 +1247,7 @@ const DoctorDashboard: React.FC = () => {
          </AnimatePresence>
       </main>
 
-      {/* Mobile Nav - Now available on both mobile and desktop */}
+      {/* Mobile Nav */}
       <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 px-6 py-4 flex justify-around z-[100] shadow-2xl">
          {[
            { id: 'dashboard', icon: LayoutDashboard },
@@ -1255,7 +1255,7 @@ const DoctorDashboard: React.FC = () => {
            { id: 'video', icon: Video },
            { id: 'profile', icon: User },
          ].map(item => (
-           <button 
+           <button
              key={item.id}
              onClick={() => setActiveTab(item.id)}
              className={`p-3 rounded-2xl transition-all ${activeTab === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'text-slate-400'}`}
@@ -1263,6 +1263,12 @@ const DoctorDashboard: React.FC = () => {
              <item.icon size={24} />
            </button>
          ))}
+         <button
+           onClick={logout}
+           className="p-3 rounded-2xl transition-all text-red-400 hover:bg-red-50"
+         >
+           <LogOut size={24} />
+         </button>
       </nav>
     </div>
   );

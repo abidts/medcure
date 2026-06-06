@@ -19,12 +19,14 @@ export const AuthProvider = ({ children }) => {
                 const userRole = localStorage.getItem('userRole');
                 const userName = localStorage.getItem('userName');
                 const userEmail = localStorage.getItem('userEmail');
-                if (userId && userRole) {
+                const token = localStorage.getItem('token');
+                if (userId && userRole && token) {
                     setUser({
                         id: userId,
                         name: userName || 'User',
                         email: userEmail || '',
-                        role: userRole
+                        role: userRole,
+                        token
                     });
                 }
             }
